@@ -42,7 +42,7 @@ def process_request(data):
                 result = execute_sql_query(query)
                 response_data = f'OK{str(result)}'
             except Exception as e:
-                response_data = str(e)
+                response_data = f'NK{str(e)}'
     else:
         response_data = f'NKInvalid service name: {service}'
 
@@ -50,6 +50,6 @@ def process_request(data):
 
 
 if __name__ == "__main__":
-    from service import main, decode_service, decode_data_fields, incode_response
+    from service import main_service, decode_service, decode_data_fields, incode_response
 
-    main('dbcon', process_request)  # Use "dbcon" as the service
+    main_service('dbcon', process_request)  # Use "dbcon" as the service

@@ -36,7 +36,7 @@ def incode_response(service, response_data):
     return response.encode('utf-8')
 
 
-def main(service, process_request):
+def main_service(service, process_request):
     server_address = ('localhost', 5000)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
