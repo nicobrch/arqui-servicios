@@ -35,6 +35,6 @@ def main_client(service, data):
 
 if __name__ == "__main__":
     # Usage example:
-    service = "usrlg"
-    data = "1234 password1"
+    service = "uauth"
+    data = "111 admin"
     main_client(service, data)

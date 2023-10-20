@@ -1,6 +1,7 @@
 import psycopg2
 from dotenv import load_dotenv
 import os
+import re
 
 # Load env variables from .env
 load_dotenv()
@@ -26,6 +27,16 @@ def execute_sql_query(sql):
     return result
 
 
+def parseQueryResponse(response):
+    parsed = ""
+    for tup in response:
+        for item in tup:
+            item = str(item)
+            item = re.sub(r'[^a-zA-Z0-9]', '', item)
+            parsed += item + " "
+    return parsed
+
+
 def process_request(data):
     service = decode_service(data)
     data_fields = decode_data_fields(data)
@@ -40,11 +51,12 @@ def process_request(data):
 
             try:
                 result = execute_sql_query(query)
-                response_data = f'OK{str(result)}'
+                result = parseQueryResponse(result)
+                response_data = f'OK {str(result)}'
             except Exception as e:
-                response_data = f'NK{str(e)}'
+                response_data = f'NK Internal error: {str(e)}'
     else:
-        response_data = f'NKInvalid service name: {service}'
+        response_data = f'NK Invalid service name: {service}'
 
     return incode_response(service, response_data.strip())
 
