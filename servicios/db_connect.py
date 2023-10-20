@@ -31,23 +31,25 @@ def process_request(data):
     data_fields = decode_data_fields(data)
 
     if service == 'dbcon':
-        # Assuming the data_fields contain a SQL query
-        query = ""
-        for data in data_fields:
-            query += data
+        if data_fields[0] == 'OKdbcon':
+            response_data = 'OKConnection established'
+        else:
+            query = ""
+            for data in data_fields:
+                query += data + ' '
 
-        try:
-            result = execute_sql_query(query)
-            response_data = f'OK{str(result)}'
-        except Exception as e:
-            response_data = str(e)
+            try:
+                result = execute_sql_query(query)
+                response_data = f'OK{str(result)}'
+            except Exception as e:
+                response_data = str(e)
     else:
-        response_data = 'NKInvalid service name'
+        response_data = f'NKInvalid service name: {service}'
 
-    return incode_response(service, response_data)
+    return incode_response(service, response_data.strip())
 
 
 if __name__ == "__main__":
     from service import main, decode_service, decode_data_fields, incode_response
 
-    main("dbcon", process_request)  # Use "querydb" as the service
+    main('dbcon', process_request)  # Use "dbcon" as the service

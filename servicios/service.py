@@ -17,6 +17,12 @@ def receive_message(sock, expected_length):
 
 def decode_service(data):
     received_str = data.decode('utf-8')
+    if received_str[5:7] == 'OK' or received_str[5:7] == 'NK':
+        return received_str[7:12]
+
+    if received_str[:5] == 'sinit':
+        return received_str[5:10]
+
     return received_str[:5]
 
 
@@ -36,7 +42,7 @@ def main(service, process_request):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect(server_address)
 
-        message = b'00010sinit'+service
+        message = bytes(f'00010sinit{service}', 'utf-8')
         print(f'Sending message: {message}')
         send_message(sock, message)
 
