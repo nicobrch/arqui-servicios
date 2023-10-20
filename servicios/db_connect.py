@@ -32,7 +32,10 @@ def process_request(data):
 
     if service == 'dbcon':
         # Assuming the data_fields contain a SQL query
-        query = data_fields[0]
+        query = ""
+        for data in data_fields:
+            query += data
+
         try:
             result = execute_sql_query(query)
             response_data = f'OK{str(result)}'
@@ -47,4 +50,4 @@ def process_request(data):
 if __name__ == "__main__":
     from service import main, decode_service, decode_data_fields, incode_response
 
-    main("querydb", process_request)  # Use "querydb" as the service
+    main("dbcon", process_request)  # Use "querydb" as the service

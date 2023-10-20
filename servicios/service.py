@@ -47,6 +47,6 @@ def main(service, process_request):
             print(f'Received data: {data}')
 
             print('Processing...')
-            response = process_request(data.decode('utf-8'))
+            response = process_request(data)
             print(f'Sending response: {response}')
             send_message(sock, response)
