@@ -1,17 +1,40 @@
 CREATE TABLE usuario (
-    rut INT PRIMARY KEY,
-    name CHAR(50),
-    type CHAR(10),
-    rol CHAR(20),
-    password VARCHAR,
-    created_at DATE DEFAULT CURRENT_DATE,
-    updated_at DATE DEFAULT CURRENT_DATE
+    id serial PRIMARY KEY,
+    usuario char(20) NOT NULL,
+    nombre char(20) NOT NULL,
+    cargo char(20),
+    tipo char(10) NOT NULL,
+    password char(72) NOT NULL,
+    created_at date DEFAULT current_date NOT NULL,
+    updated_at date DEFAULT current_date NOT NULL
 );
 
-INSERT INTO usuario (rut, name, type, rol, password)
-VALUES
-    (111, 'User1', 'Type1', 'Role1', 'password1'),
-    (222, 'User2', 'Type2', 'Role2', 'password2'),
-    (333, 'User3', 'Type3', 'Role3', 'password3'),
-    (444, 'User4', 'Type4', 'Role4', 'password4'),
-    (555, 'User5', 'Type5', 'Role5', 'password5');
+CREATE TABLE bloque (
+    id serial PRIMARY KEY,
+    hora_inicio int NOT NULL,
+    hora_fin int NOT NULL,
+    dia char(10) NOT NULL,
+    created_at date DEFAULT current_date NOT NULL,
+    updated_at date DEFAULT current_date NOT NULL
+);
+
+CREATE TABLE asignacion (
+    id serial PRIMARY KEY,
+    usuario_id int NOT NULL,
+    bloque_id int NOT NULL,
+    created_at date DEFAULT current_date NOT NULL,
+    updated_at date DEFAULT current_date NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+    FOREIGN KEY (bloque_id) REFERENCES bloque(id)
+);
+
+CREATE TABLE comentarios (
+    id serial PRIMARY KEY,
+    usuario_id int NOT NULL,
+    asignacion_id int NOT NULL,
+    texto char(100) NOT NULL,
+    created_at date DEFAULT current_date NOT NULL,
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+    FOREIGN KEY (asignacion_id) REFERENCES asignacion(id)
+);
+
