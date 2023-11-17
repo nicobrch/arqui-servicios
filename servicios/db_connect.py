@@ -1,18 +1,17 @@
 import psycopg2
-from dotenv import load_dotenv
-import os
 import re
+import os
+from dotenv import load_dotenv
 
-# Load env variables from .env
 load_dotenv()
 
 # Database connection parameters
 db_params = {
-    "database": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "host": os.getenv("DB_HOST"),
-    "port": os.getenv("DB_PORT"),
+    "database": os.getenv("POSTGRES_DB"),
+    "user": os.getenv("POSTGRES_USER"),
+    "password": os.getenv("POSTGRES_PASSWORD"),
+    "host": os.getenv("POSTGRES_HOST"),
+    "port": os.getenv("POSTGRES_PORT"),
 }
 
 
@@ -43,7 +42,7 @@ def process_request(data):
 
     if service == 'dbcon':
         if data_fields[0] == 'OKdbcon':
-            response_data = 'OKConnection established'
+            response_data = 'OK Connection established'
         else:
             query = ""
             for data in data_fields:
