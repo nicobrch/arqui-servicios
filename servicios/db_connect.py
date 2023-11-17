@@ -1,23 +1,25 @@
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
 import os
 import json
 
-'''
+"""
 @   Conexión a la base de datos
-*   Este archivo recibe un SQL como texto:  sql = """INSERT INTO book(id, title) VALUES(:id, :title)"""
-*   Y los parametros:   data = { "id": 1, "title": "The Hobbit" }
-*   Ejemplo input:  { "sql": "SELECT...", "params" : { "nombre": "Nico" }, }
-*   Se asume que antes de enviar una SQL ya se comprobaron los campos en el servicio determinado.
-'''
+*   Este archivo recibe un SQL como texto =>    "sql":"SELECT usuario FROM usuario WHERE nombre = :nombre"
+*   Y los parametros =>                         "params": { "nombre": "Nico" }
+*   Se asume que las query SQL estan correctas y los parámetros son válidos.
+"""
 
 load_dotenv()
 
 
 def connect():
+    """
+    @   Función para crear una sesión
+    *   Se conecta a la BDD usando SQLAlchemy. La BDD debe estar corriendo en el docker compose.
+    """
     db_url = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
     Base = declarative_base()
     engine = create_engine(db_url)
@@ -26,37 +28,51 @@ def connect():
     return Session()
 
 
-def execute_sql_query(sql, data):
+def execute_sql_query(sql, params):
+    """
+    @   Función para ejecutar una query SQL
+    *   Ejecuta la query con los parámetros y la retorna
+    """
     session = connect()
-    result = session.execute(text(sql), **data)
+    result = session.execute(text(sql), params)
     session.commit()
     session.close()
     return result
 
 
-def parse_sql_response_to_json(sql_result):
-    # Check if the result is falsy (empty list)
-    if not sql_result:
-        return json.dumps([], indent=2)
-    # Fetch the column names from the result object
-    columns = sql_result.keys()
-    # Convert the result rows to a list of dictionaries
-    rows = [dict(zip(columns, row)) for row in sql_result]
-    # Convert the list of dictionaries to JSON
-    json_result = json.dumps(rows, indent=2)
+def parse_sql_result_to_json(sql_result):
+    """
+    @   Función para parsear el resultado SQL a JSON
+    *   El resultado viene dado por filas, así que crea una lista de JSON con la forma { columna : valor }
+    """
+    column_names = sql_result.keys()
+    result_list = []
 
-    return json_result
+    for row in sql_result:
+        index = 0
+        for column in column_names:
+            value = str(row[index]).strip()
+            row_dict = {
+                column: value
+            }
+            result_list.append(row_dict)
+            index = index + 1
+
+    return result_list
 
 
 def process_request(data):
-    decoded_data = decode_protocol(data)
-    print("DECODED DATA: ", decoded_data)
+    """
+    @   Función para procesar los mensajes que llegan al servicio
+    *   Utiliza la función decoded_data para obtener los valores importantes del mensaje
+    *   Se asume que todos los mensajes tienen las llaves 'sql' y 'params'. Esto se debe validar previamente en
+    *   el servicio que llame al servicio 'dbcon'
+    """
+    decoded_data = decode_response(data)
+    print("decoded_data: ", decoded_data)
     length = decoded_data['length']
-    print("LENGTH: ", length)
     service = decoded_data['service']
-    print("SERVICE: ", service)
-    response = json.dumps(decoded_data['response'])
-    print("RESPONSE: ", response)
+    response = json.dumps(decoded_data['data'])
 
     if service == 'dbcon':
         try:
@@ -64,23 +80,27 @@ def process_request(data):
             sql = msg['sql']
             params = msg['params']
             sql_result = execute_sql_query(sql, params)
-            sql_result = parse_sql_response_to_json(sql_result)
+            json_result = parse_sql_result_to_json(sql_result)
             response_data = {
-                "response": sql_result
+                "data": json_result
             }
         except Exception as err:
             response_data = {
-                "response": "Database Error: " + str(err)
+                "data": "Database Error: " + str(err)
             }
     else:
         response_data = {
-            "response": "Invalid Service: " + service
+            "data": "Invalid Service: " + service
         }
 
     return incode_response(service, response_data)
 
 
 if __name__ == "__main__":
-    from service import main_service, decode_protocol, decode_response, incode_response
+    """
+    @   Función main
+    *   Queda en un loop infinito donde recibe mensajes y los procesa.
+    """
+    from service import main_service, decode_response, incode_response
 
     main_service('dbcon', process_request)  # Use "dbcon" as the service
