@@ -34,7 +34,10 @@ def execute_sql_query(sql, params):
     *   Ejecuta la query con los parámetros y la retorna
     """
     session = connect()
-    result = session.execute(text(sql), params)
+    if params is not None:
+        result = session.execute(text(sql), params)
+    else:
+        result = session.execute(text(sql))
     session.commit()
     session.close()
     return result
@@ -61,7 +64,7 @@ def parse_sql_result_to_json(sql_result):
     return result_list
 
 
-def process_request(data):
+def process_request(sock, data):
     """
     @   Función para procesar los mensajes que llegan al servicio
     *   Utiliza la función decoded_data para obtener los valores importantes del mensaje
@@ -69,31 +72,41 @@ def process_request(data):
     *   el servicio que llame al servicio 'dbcon'
     """
     decoded_data = decode_response(data)
-    print("decoded_data: ", decoded_data)
-    length = decoded_data['length']
     service = decoded_data['service']
     response = json.dumps(decoded_data['data'])
 
-    if service == 'dbcon':
-        try:
-            msg = json.loads(response)
-            sql = msg['sql']
-            params = msg['params']
-            sql_result = execute_sql_query(sql, params)
-            json_result = parse_sql_result_to_json(sql_result)
-            response_data = {
-                "data": json_result
-            }
-        except Exception as err:
-            response_data = {
-                "data": "Database Error: " + str(err)
-            }
-    else:
-        response_data = {
+    if service != 'dbcon':
+        return incode_response(service, {
             "data": "Invalid Service: " + service
-        }
+        })
 
-    return incode_response(service, response_data)
+    try:
+        msg = json.loads(response)
+        #   Si no hay query SQL, retorno con un error
+        if 'sql' not in msg:
+            return incode_response(service, {
+                "data": "No SQL Query in data."
+            })
+        sql = msg['sql']
+
+        #   Se pueden ejecutar queries con o sin parámetros, así que se define como None si no hay
+        if 'params' not in msg:
+            params = None
+        else:
+            params = msg['params']
+
+        #   Se ejecuta la query usando las funciones
+        sql_result = execute_sql_query(sql, params)
+        json_result = parse_sql_result_to_json(sql_result)
+
+        #   Se devuelven los resultados mediante le campo 'data'
+        return incode_response(service, {
+            "data": json_result
+        })
+    except Exception as err:
+        return incode_response(service, {
+            "data": "Database Error: " + str(err)
+        })
 
 
 if __name__ == "__main__":

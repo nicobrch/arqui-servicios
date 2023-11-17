@@ -113,7 +113,7 @@ def main_service(service, process_request):
                     continue
 
                 print('Processing...')
-                response = process_request(data)
+                response = process_request(sock, data)
                 decoded = decode_response(response)
                 response = incode_response(decoded['service'], decoded['data'])
                 print(f'Sending response: {response}')
