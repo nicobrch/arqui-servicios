@@ -15,7 +15,7 @@ HIDE_EMPTY_PASSWORD=yes
 
 ```shell
 docker compose build
-docker compose up
+docker compose up -d
 ```
 
 Borrar volumen cuando termina

@@ -16,8 +16,9 @@ def send_message(sock, service: str, data: dict):
     data = json.dumps(data)
     msg_len = len(service) + len(data)
     message = f"{msg_len:05d}{service}{data}"
-    print("Sending: ", message)
-    sock.sendall(message.encode('utf-8'))
+    encoded_msg = message.encode('utf-8')
+    print("Sending: ", encoded_msg)
+    sock.sendall(encoded_msg)
 
 
 def receive_response(sock):
