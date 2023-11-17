@@ -1,22 +1,36 @@
-def main_function(sock):
+import socket
+
+
+def main_client():
     """
-    @   Cliente de ejemplo
-    *   Ejecutaremos una query SQL en el servicio DBCON como prueba.
-    *   Asegúrate siempre que los servicios que vayas a consultar esten en funcionamiento antes de ejecutar el cliente.
+    @   Cliente princiapl
+    *   Todos los clientes deben tener esta función para ser cliente. Se conecta al bus en localhost y puerto 5000.
+    *   Dentro del try se programa la lógica correspondiente al servicio.
     """
-    datos = {
-        "sql": "SELECT usuario FROM usuario WHERE nombre = :nombre",
-        "params": {
-            "nombre": "Nico"
-        }
-    }
-    send_message(sock, service, datos)
-    respuesta = receive_response(sock)
-    print("Respuesta: ", respuesta)
+    service = 'dbcon'
+    server_address = ('localhost', 5000)
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.connect(server_address)
+            datos = {
+                "sql": "SELECT usuario FROM usuario WHERE nombre = :nombre",
+                "params": {
+                    "nombre": "Nico"
+                }
+            }
+            send_message(sock, service, datos)
+            respuesta = receive_response(sock)
+            print("Respuesta: ", respuesta)
+        except ConnectionRefusedError:
+            print(f'No se pudo conectar al bus.')
+        except KeyboardInterrupt:
+            print(f'Cerrando cliente {service}')
+        finally:
+            sock.close()
 
 
 if __name__ == "__main__":
-    from client import send_message, receive_response, main_client
+    from client import send_message, receive_response
 
-    service = 'dbcon'
-    main_client(service, False, main_function)
+    main_client()
