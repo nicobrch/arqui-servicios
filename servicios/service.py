@@ -1,4 +1,5 @@
 import socket
+import json
 
 
 def send_message(sock, message):
@@ -15,25 +16,32 @@ def receive_message(sock, expected_length):
     return received_data
 
 
-def decode_service(data):
-    received_str = data.decode('utf-8')
-    if received_str[5:7] == 'OK' or received_str[5:7] == 'NK':
-        return received_str[7:12]
-
-    if received_str[:5] == 'sinit':
-        return received_str[5:10]
-
-    return received_str[:5]
+def decode_protocol(response):
+    response = response.decode('utf-8')
+    length = response[:5]
+    service = response[5:10]
+    if response[5:7] == 'OK' or response[5:7] == 'NK':
+        service = response[7:12]
+    return length, service
 
 
-def decode_data_fields(data):
-    received_str = data.decode('utf-8')
-    return received_str[5:].split()
+def decode_response(response):
+    response = response.decode('utf-8')
+    return json.loads(response[12:])
 
 
-def incode_response(service, response_data):
-    response = f'{len(service) + len(response_data):05d}{service}{response_data}'
-    return response.encode('utf-8')
+def incode_response(service, response):
+    msg_len = len(service) + len(response)
+    data_json = json.dumps(response)
+    response_formatted = f'{msg_len:05d}{service}{data_json}'
+    return response_formatted.encode('utf-8')
+
+
+def is_sinit_response(response):
+    response = response.decode('utf-8')
+    if response[:5] == 'sinit':
+        return True
+    return False
 
 
 def main_service(service, process_request):
@@ -51,6 +59,9 @@ def main_service(service, process_request):
             expected_length = int(receive_message(sock, 5).decode('utf-8'))
             data = receive_message(sock, expected_length)
             print(f'Received data: {data}')
+
+            if is_sinit_response(data):
+                continue
 
             print('Processing...')
             response = process_request(data)
