@@ -38,3 +38,26 @@ CREATE TABLE comentarios (
     FOREIGN KEY (asignacion_id) REFERENCES asignacion(id)
 );
 
+INSERT INTO usuario (usuario, nombre, cargo, tipo, password)
+VALUES
+('jonas', 'Jonas', 'Tecnico', 'admin', '123'),
+('nico', 'Nico', 'Admin', 'admin', '456'),
+('diego', 'Diego', 'Medico', 'personal', '789');
+
+INSERT INTO bloque (hora_inicio, hora_fin, dia)
+VALUES
+(9, 12, 'Lunes'),
+(14, 17, 'Martes'),
+(10, 13, 'Miércoles');
+
+INSERT INTO asignacion (usuario_id, bloque_id)
+VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+INSERT INTO comentarios (usuario_id, asignacion_id, texto)
+VALUES
+(1, 1, 'hola'),
+(2, 2, 'hola2'),
+(3, 3, 'hola3');

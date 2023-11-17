@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # ----------- db ----------- #
   postgres:
-    image: postgres:16.1
+    image: postgres:14.10
     container_name: postgres
     restart: always
     volumes:
@@ -13,7 +13,7 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRESQL_USER=${POSTGRES_USER}s
+      - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_DATABASE=${POSTGRES_DB}
       - ALLOW_EMPTY_PASSWORD=${HIDE_EMPTY_PASSWORD}
       - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
@@ -25,14 +25,3 @@ services:
     restart: always
     ports:
       - "5000:5000"
-
-  # ----------- servicios ----------- #
-  serv-dbcon:
-    build: ./servicios
-    container_name: serv-dbcon
-    command: sh -c "sleep 6 && python db_connect.py"
-    depends_on:
-      - postgres
-      - bus
-    volumes:
-      - ./servicios:/usr/src/app
