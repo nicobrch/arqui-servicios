@@ -18,8 +18,7 @@ load_dotenv()
 
 
 def connect():
-    db_url = (f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@"
-              f"{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}")
+    db_url = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
     Base = declarative_base()
     engine = create_engine(db_url)
     Base.metadata.create_all(engine)
@@ -50,10 +49,13 @@ def parse_sql_response_to_json(sql_result):
 
 
 def process_request(data):
-    length, service = decode_protocol(data)
-    print("DATA: ", data)
-    print("LENGTH: ", length, " SERVICE: ", service)
-    response = decode_response(data)
+    decoded_data = decode_protocol(data)
+    print("DECODED DATA: ", decoded_data)
+    length = decoded_data['length']
+    print("LENGTH: ", length)
+    service = decoded_data['service']
+    print("SERVICE: ", service)
+    response = json.dumps(decoded_data['response'])
     print("RESPONSE: ", response)
 
     if service == 'dbcon':

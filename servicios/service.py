@@ -18,11 +18,29 @@ def receive_message(sock, expected_length):
 
 def decode_protocol(response):
     response = response.decode('utf-8')
-    length = response[:5]
-    service = response[5:10]
-    if response[5:7] == 'OK' or response[5:7] == 'NK':
-        service = response[7:12]
-    return length, service
+    try:
+        length = int(response[:5])
+        service = response[5:10]
+        response_data = json.loads(response[10:])
+        if response[5:7] == 'OK' or response[5:7] == 'NK':
+            service = response[7:12]
+            response_data = json.loads(response[12:])
+        return {
+            "length": length,
+            "service": service,
+            "response": response_data
+        }
+    except ValueError:
+        service = response[:5]
+        response_data = json.loads(response[5:])
+        if response[5:7] == 'OK' or response[5:7] == 'NK':
+            service = response[7:12]
+            response_data = json.loads(response[12:])
+        return {
+            "length": 0,
+            "service": service,
+            "response": response_data
+        }
 
 
 def decode_response(response):
