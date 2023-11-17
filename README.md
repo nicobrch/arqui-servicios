@@ -1,5 +1,16 @@
 # Arquitectura de Software
 
+## Env
+
+```dotenv
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=arquisw
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+HIDE_EMPTY_PASSWORD=yes
+```
+
 ## Ejecutar
 
 ```shell
@@ -7,22 +18,8 @@ docker compose build
 docker compose up
 ```
 
-Para botarlo
+Borrar volumen cuando termina
 
 ```shell
-docker compose down
-```
-
-#### Iniciar BUS
-
-```bash
-docker run -d -p 5000:5000 jrgiadach/soabus:v1
-```
-
-#### Iniciar BDD
-
-```bash
-cd ./db
-docker compose build
-docker compose up -d
+docker compose down -v
 ```
