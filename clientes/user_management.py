@@ -17,7 +17,13 @@ def main_client():
 
             #   Definimos la opción que elija como un diccionario
             datos = {
-                "leer": "True"
+                "crear": {
+                    "usuario": "lillo",
+                    "nombre": "Papelillo",
+                    "cargo": "Admin",
+                    "tipo": "admin",
+                    "password": "999"
+                }
             }
             #   Enviamos el mensaje mediante el socket al servicio
             send_message(sock, service, datos)

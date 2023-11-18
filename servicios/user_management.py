@@ -1,5 +1,4 @@
 import json
-import socket
 
 """
 @   Manejo de usuarios
@@ -55,18 +54,35 @@ def process_request(sock, data):
     try:
         msg = json.loads(response)
         if 'leer' in msg:
-            """
-            @   Función para procesar los mensajes que llegan al servicio
-            *   Utiliza la función decoded_data para obtener los valores importantes del mensaje.
-            """
+            #   Opción de leer usuarios, habrá que verificar si se desea leer un usuario o muchos
             db_sql = {
                 "sql": "SELECT usuario, nombre, cargo, tipo FROM usuario"
             }
             db_request = process_db_request(sock, db_sql)
             return incode_response(service, db_request)
+        elif 'crear' in msg:
+            #   Opción de crear usuarios
+            fields: dict = msg['crear']
+            if 'usuario' and 'nombre' and 'cargo' and 'tipo' and 'password' not in fields:
+                return incode_response(service, {
+                    "data": "Incomplete user fields."
+                })
+            db_sql = {
+                "sql": "INSERT INTO usuario (usuario, nombre, cargo, tipo, password) VALUES ("
+                       ":usuario, :nombre, :cargo, :tipo, :password)",
+                "params": {
+                    "usuario": fields['usuario'],
+                    "nombre": fields['nombre'],
+                    "cargo": fields['cargo'],
+                    "tipo": fields['tipo'],
+                    "password": fields['password']
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            return incode_response(service, db_request)
         else:
             return incode_response(service, {
-                "data": "No valid options"
+                "data": "No valid options."
             })
     except Exception as err:
         return incode_response(service, {
