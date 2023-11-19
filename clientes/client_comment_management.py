@@ -21,7 +21,7 @@ def service_request(sock, service, datos):
     respuesta = receive_response(sock)
     return respuesta['status'], respuesta['data']
 
-def crear_usuario(sock, service):
+def crear_comentario(sock, service):
     usuario_id = input_field("Ingrese el Usuario_ID: ", max_length=20)
     asignacion_id = input_field("Ingrese el Asignacion_ID: ", max_length=20)
     texto = input_field("Ingrese el texto del comentario: ", max_length=20)
@@ -37,7 +37,7 @@ def crear_usuario(sock, service):
 
     status, data = service_request(sock, service, datos)
     if status == 'OK':
-        print(f"Se han insertado correctamente {data['affected_rows']} usuarios.")
+        print(f"Se han insertado correctamente {data['affected_rows']} comentarios.")
     else:
         print(f"Ocurrió un error: {data}")
 
@@ -48,7 +48,7 @@ def main_client():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.connect(server_address)
-            crear_usuario(sock=sock, service=service)
+            crear_comentario(sock=sock, service=service)
 
         except ConnectionRefusedError:
             print(f'No se pudo conectar al bus.')
