@@ -1,7 +1,6 @@
 
 import json
-from user_management import process_db_request
-from service import main_service, decode_response, incode_response
+from service import main_service, decode_response, incode_response,process_db_request
 
 
 def process_request(sock, data):
