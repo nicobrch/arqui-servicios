@@ -25,7 +25,7 @@ def main_client():
             #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
 
             #   Definimos la opción que elija como un diccionario
-
+            """
             while True:
                 menu()
                 opcion = input()
@@ -84,11 +84,26 @@ def main_client():
                 else:
                     print("Opcion no valida")
                     continue
-                #   Enviamos el mensaje mediante el socket al servicio
+                
                 send_message(sock, service, datos)
                 #   Recibimos la respuesta desde el socket
                 respuesta = receive_response(sock)
                 print("Respuesta: ", respuesta)
+
+            """
+            
+            datos = {
+                "crear": {
+                    "hora_inicio": "3",
+                    "hora_fin": "7",
+                    "dia": "lunes"
+                }
+            }
+            #   Enviamos el mensaje mediante el socket al servicio
+            send_message(sock, service, datos)
+            #   Recibimos la respuesta desde el socket
+            respuesta = receive_response(sock)
+            print("Respuesta: ", respuesta)
         except ConnectionRefusedError:
             print(f'No se pudo conectar al bus.')
         except KeyboardInterrupt:
