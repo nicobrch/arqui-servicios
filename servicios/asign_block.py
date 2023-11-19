@@ -66,7 +66,7 @@ def process_request(sock, data):
             })
     except Exception as err:
         return incode_response(service, {
-            "data": "asignacion Error: " + str(err)
+            "data": "asign block Error: " + str(err)
         })
 
 
@@ -78,4 +78,4 @@ if __name__ == "__main__":
     """
     from service import main_service, decode_response, incode_response
     from user_management import process_db_request
-    main_service('asign', process_request)  # Use "block" as the service
+    main_service('asign', process_request)  # Use "asign" as the service
