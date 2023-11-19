@@ -1,5 +1,5 @@
 import socket
-import json  # Asegúrate de importar la biblioteca json
+import json  
 
 def valid_fields(user_input, max_length):
     if len(user_input) > max_length:
