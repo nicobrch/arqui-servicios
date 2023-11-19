@@ -1,4 +1,5 @@
 import socket
+import json  # Asegúrate de importar la biblioteca json
 
 def valid_fields(user_input, max_length):
     if len(user_input) > max_length:
@@ -15,9 +16,9 @@ def input_field(text_input, max_length):
     return field
 
 def service_request(sock, service, datos):
-    #   Enviamos el mensaje mediante el socket al servicio
-    send_message(sock, service, datos)
-    #   Recibimos la respuesta desde el socket
+    # Convierte el diccionario a una cadena JSON antes de enviar
+    data_json = json.dumps(datos)
+    send_message(sock, service, data_json)
     respuesta = receive_response(sock)
     return respuesta['status'], respuesta['data']
 
@@ -37,6 +38,8 @@ def crear_comentario(sock, service):
 
     status, data = service_request(sock, service, datos)
     if status == 'OK':
+        # Imprime la información en formato JSON
+        print("Respuesta en formato JSON:", json.dumps(data, indent=2))
         print(f"Se han insertado correctamente {data['affected_rows']} comentarios.")
     else:
         print(f"Ocurrió un error: {data}")
