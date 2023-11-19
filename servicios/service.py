@@ -84,6 +84,35 @@ def is_sinit_response(response):
     return False
 
 
+def process_db_request(sock, sql):
+    """
+    @   Conexión al servicio de BDD
+    *   Esta función recibe una query SQL con la cuál se conecta a la bdd usando el servicio DBCON.
+    *   Por tanto, para poder ejecutar es necesario tener corriendo el servicio de DBCON.
+    """
+    try:
+        #   Hacemos el request al servicio 'dbcon' igual que con cualquier otro servicio
+        db_request = incode_response('dbcon', sql)
+        print(f'Requesting data from database...')
+        send_message(sock, db_request)
+        print(f'Waiting for response...')
+        expected_length = int(receive_message(sock, 5).decode('utf-8'))
+        received_data = receive_message(sock, expected_length)
+        print(f'Received data: {received_data}')
+
+        #   Los datos se encuentran en bytes, es necesario codificar los datos
+        db_data = json.loads(received_data[7:])
+        format_db_data = incode_response('dbcon', db_data)
+        decode_db_data = decode_response(format_db_data)
+
+        #   Retornamos los datos codificados
+        return decode_db_data['data']
+    except Exception as err:
+        return {
+            "data": "Database Error: " + str(err)
+        }
+
+
 def main_service(service, process_request):
     """
     @   Servicio principal
