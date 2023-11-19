@@ -16,6 +16,7 @@ def main_client():
             #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
 
             #   Definimos la opción que elija como un diccionario
+
             #crear
             datos = {
                 "crear": {
@@ -25,12 +26,12 @@ def main_client():
                 }
             }
             """
-            (leer)
-                datos = {
-                    "leer": {
-                        "id": "8",
-                    }
-            
+            #(leer)
+            datos = {
+                "leer": {
+                    "id": "1",
+                }
+            }
             (modificar)
                 datos = {
                     "modificar": {
