@@ -48,20 +48,33 @@ def parse_sql_result_to_json(sql_result):
     @   Función para parsear el resultado SQL a JSON
     *   El resultado viene dado por filas, así que crea una lista de JSON con la forma { columna : valor }
     """
-    column_names = sql_result.keys()
-    result_list = []
 
-    for row in sql_result:
-        index = 0
-        for column in column_names:
-            value = str(row[index]).strip()
-            row_dict = {
-                column: value
-            }
-            result_list.append(row_dict)
-            index = index + 1
+    # Check if the result has rows (for SELECT queries)
+    if sql_result.returns_rows:
+        result_list = []
+        column_names = sql_result.keys()
+        row_index = 0
 
-    return result_list
+        for row in sql_result:
+            row_list = []
+            column_index = 0
+
+            for column in column_names:
+                value = str(row[column_index]).strip()
+                row_dict = {
+                    column: value
+                }
+                row_list.append(row_dict)
+                column_index = column_index + 1
+
+            result_list.append({str(row_index): row_list})
+            row_index = row_index + 1
+
+        return result_list
+    else:
+        # Handle non-SELECT queries (INSERT, UPDATE, DELETE)
+        affected_rows = sql_result.rowcount
+        return {"affected_rows": affected_rows}
 
 
 def process_request(sock, data):
