@@ -16,37 +16,15 @@ def main_client():
             #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
 
             #   Definimos la opción que elija como un diccionario
-            #crear
+            #asignar
             datos = {
-                "crear": {
+                "asignar": {
+                    "usuario": "nico",
                     "hora_inicio": "8",
                     "hora_fin": "18",
                     "dia": "Lunes"
                 }
             }
-            """
-            (leer)
-                datos = {
-                    "leer": {
-                        "id": "8",
-                    }
-            
-            (modificar)
-                datos = {
-                    "modificar": {
-                        "id": "1",
-                        "hora_inicio": "8",
-                        "hora_fin": "18",
-                        "dia": "Lunes"
-                    }
-            (eliminar)
-                datos = {
-                    "eliminar": {
-                        "id": "1",
-                    }
-                }
-                
-            """
 
             #   Enviamos el mensaje mediante el socket al servicio
             send_message(sock, service, datos)

@@ -1,15 +1,6 @@
 
-
-"""
-debo hacer un servicio que haga 3 cosas
-defina los horarios 
-modifique los horarios
-elimine los horarios
-
-"""
 import json
-from service import main_service, decode_response, incode_response
-from user_management import process_db_request
+
 
 def process_request(sock, data):
     """
@@ -20,7 +11,7 @@ def process_request(sock, data):
     service = decoded_data['service']
     response = json.dumps(decoded_data['data'])
 
-    if service != 'usrmn':
+    if service != 'block':
         return incode_response(service, {
             "data": "Invalid Service: " + service
         })
@@ -36,7 +27,10 @@ def process_request(sock, data):
             #   Opción de leer usuarios, habrá que verificar si se desea leer un usuario o muchos
             else:
                 db_sql = {
-                    "sql": "SELECT id FROM bloque"
+                    "sql": "SELECT id FROM bloque WHERE id = :id",
+                    "params": {
+                        "id": fields['id'],
+                    }
                 }
             db_request = process_db_request(sock, db_sql)
             return incode_response(service, db_request)
@@ -48,10 +42,9 @@ def process_request(sock, data):
                     "data": "Incomplete user fields."
                 })
             db_sql = {
-                "sql": "INSERT INTO bloque (id, hora_inicio, hora_fin, dia) VALUES ("
-                       ":id, :hora_inicio, :hora_fin, :dia)",
+                "sql": "INSERT INTO bloque (hora_inicio, hora_fin, dia) VALUES ("
+                       ":hora_inicio, :hora_fin, :dia)",
                 "params": {
-                    "id": fields['id'],
                     "hora_inicio": fields['hora_inicio'],
                     "hora_fin": fields['hora_fin'],
                     "dia": fields['dia'],
@@ -96,7 +89,7 @@ def process_request(sock, data):
             })
     except Exception as err:
         return incode_response(service, {
-            "data": "User Management Error: " + str(err)
+            "data": "schedule block Error: " + str(err)
         })
 
 
@@ -106,4 +99,6 @@ if __name__ == "__main__":
     @   Función main
     *   Queda en un loop infinito donde recibe mensajes y los procesa.
     """
+    from service import main_service, decode_response, incode_response
+    from user_management import process_db_request
     main_service('block', process_request)  # Use "block" as the service
