@@ -7,7 +7,7 @@ def main_client():
     *   Todos los clientes deben tener esta función para ser cliente. Se conecta al bus en localhost y puerto 5000.
     *   Dentro del try se programa la lógica correspondiente al servicio.
     """
-    service = 'block'
+    service = 'asign'
     server_address = ('localhost', 5000)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -16,7 +16,7 @@ def main_client():
             #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
 
             #   Definimos la opción que elija como un diccionario
-            #asignar
+            #asignar horario
             datos = {
                 "asignar": {
                     "usuario": "nico",
