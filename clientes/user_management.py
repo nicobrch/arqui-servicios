@@ -1,6 +1,15 @@
 import socket
 
 
+def menu():
+    print("{ -- Servicio de Manejo de Usuarios -- }")
+    print("[1] Crear un Usuario.")
+    print("[2] Leer Usuarios.")
+    print("[3] Actualizar un Usuario.")
+    print("[4] Borrar un Usuario.")
+    print("[0] Terminar Programa.")
+
+
 def main_client():
     """
     @   Cliente princiapl
@@ -13,24 +22,38 @@ def main_client():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.connect(server_address)
-            #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
 
-            #   Definimos la opción que elija como un diccionario
-            datos = {
-                "crear": {
-                    "usuario": "lillo",
-                    "nombre": "Papelillo",
-                    "cargo": "Admin",
-                    "tipo": "admin",
-                    "password": "999"
-                }
-            }
-            #   Enviamos el mensaje mediante el socket al servicio
-            send_message(sock, service, datos)
+            while True:
+                menu()
+                opcion = input()
 
-            #   Recibimos la respuesta desde el socket
-            respuesta = receive_response(sock)
-            print("Respuesta: ", respuesta)
+                if opcion == '0':
+                    break
+                elif opcion == '1':
+                    print("[ - Crear Usuario - ]")
+                    usuario = input("Ingrese un usuario: ")
+                    nombre = input("Ingrese un nombre: ")
+                    cargo = input("Ingrese un cargo: ")
+                    tipo = input("Ingrese un tipo: ")
+                    password = input("Ingrese una contraseña: ")
+
+                    #   Definimos la opción que elija como un diccionario
+                    datos = {
+                        "crear": {
+                            "usuario": usuario,
+                            "nombre": nombre,
+                            "cargo": cargo,
+                            "tipo": tipo,
+                            "password": password
+                        }
+                    }
+                    #   Enviamos el mensaje mediante el socket al servicio
+                    send_message(sock, service, datos)
+
+                    #   Recibimos la respuesta desde el socket
+                    respuesta = receive_response(sock)
+                    print("Respuesta: ", respuesta)
+
         except ConnectionRefusedError:
             print(f'No se pudo conectar al bus.')
         except KeyboardInterrupt:
