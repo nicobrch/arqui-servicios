@@ -54,8 +54,8 @@ def process_request(sock, data):
                 "sql": "INSERT INTO asignacion (id_usuario, id_bloque) VALUES ("
                        ":id_usuario, :id_bloque)",
                 "params": {
-                    "id_usuario": db_userrequest['data'][0]['id'],
-                    "id_bloque": db_blockrequest['data'][0]['id'],
+                    "id_usuario": db_userrequest['data']['0']['id'],
+                    "id_bloque": db_blockrequest['data']['0']['id'],
                 }
             }
             db_request = process_db_request(sock, db_sql)

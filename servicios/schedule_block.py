@@ -1,5 +1,6 @@
 
 import json
+from service import main_service, decode_response, incode_response,process_db_request
 
 
 def process_request(sock, data):
@@ -99,6 +100,4 @@ if __name__ == "__main__":
     @   Función main
     *   Queda en un loop infinito donde recibe mensajes y los procesa.
     """
-    from service import main_service, decode_response, incode_response
-    from user_management import process_db_request
     main_service('block', process_request)  # Use "block" as the service
