@@ -1,4 +1,5 @@
 import socket
+import sys
 import json
 
 """
@@ -93,7 +94,7 @@ def process_db_request(sock, sql):
     try:
         #   Hacemos el request al servicio 'dbcon' igual que con cualquier otro servicio
         db_request = incode_response('dbcon', sql)
-        print(f'Requesting data from database...')
+        print(f'Requesting data from db: {db_request}')
         send_message(sock, db_request)
         print(f'Waiting for response...')
         expected_length = int(receive_message(sock, 5).decode('utf-8'))
@@ -142,12 +143,15 @@ def main_service(service, process_request):
                     continue
 
                 print('Processing...')
-                response = process_request(sock, data)
+                response = process_request(sock=sock, data=data)
                 decoded = decode_response(response)
                 response = incode_response(decoded['service'], decoded['data'])
                 print(f'Sending response: {response}')
                 send_message(sock, response)
         except KeyboardInterrupt:
             print(f'Terminating service {service}')
+            sock.close()
+            sys.exit(0)
         finally:
             sock.close()
+            sys.exit(0)

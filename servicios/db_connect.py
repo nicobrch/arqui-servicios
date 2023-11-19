@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 from sqlalchemy.orm import declarative_base, sessionmaker
 from dotenv import load_dotenv
+from time import sleep
 import os
 import json
 
@@ -48,7 +49,6 @@ def parse_sql_result_to_json(sql_result):
     @   Función para parsear el resultado SQL a JSON
     *   El resultado viene dado por filas, así que crea una lista de JSON con la forma { columna : valor }
     """
-
     # Check if the result has rows (for SELECT queries)
     if sql_result.returns_rows:
         result_list = []
@@ -74,7 +74,7 @@ def parse_sql_result_to_json(sql_result):
     else:
         # Handle non-SELECT queries (INSERT, UPDATE, DELETE)
         affected_rows = sql_result.rowcount
-        return {"affected_rows": affected_rows}
+        return {"affected_rows": str(affected_rows)}
 
 
 def process_request(sock, data):
@@ -122,6 +122,15 @@ def process_request(sock, data):
         })
 
 
+def main(sock, data):
+    try:
+        return process_request(sock=sock, data=data)
+    except Exception as e:
+        print("Exception: ", e)
+        sleep(20)
+        main(sock, data)
+
+
 if __name__ == "__main__":
     """
     @   Función main
@@ -129,4 +138,4 @@ if __name__ == "__main__":
     """
     from service import main_service, decode_response, incode_response
 
-    main_service('dbcon', process_request)  # Use "dbcon" as the service
+    main_service('dbcon', main)  # Use "dbcon" as the service

@@ -1,4 +1,5 @@
 import json
+from time import sleep
 
 """
 @   Manejo de usuarios
@@ -171,7 +172,7 @@ def delete(sock, service, msg):
     db_sql = {
         "sql": "DELETE FROM usuario WHERE usuario = :usuario",
         "params": {
-            "usuario": msg['usuario'],
+            "usuario": msg['borrar'],
         }
     }
     db_request = process_db_request(sock, db_sql)
@@ -195,13 +196,13 @@ def process_request(sock, data):
     try:
         msg = json.loads(response)
         if 'leer' in msg:
-            read(sock=sock, service=service, msg=msg)
+            return read(sock=sock, service=service, msg=msg)
         elif 'crear' in msg:
-            create(sock=sock, service=service, msg=msg)
+            return create(sock=sock, service=service, msg=msg)
         elif 'actualizar' in msg:
-            update(sock=sock, service=service, msg=msg)
+            return update(sock=sock, service=service, msg=msg)
         elif 'borrar' in msg:
-            delete(sock=sock, service=service, msg=msg)
+            return delete(sock=sock, service=service, msg=msg)
         else:
             return incode_response(service, {
                 "data": "No valid options."
@@ -212,6 +213,15 @@ def process_request(sock, data):
         })
 
 
+def main(sock, data):
+    try:
+        return process_request(sock=sock, data=data)
+    except Exception as e:
+        print("Exception: ", e)
+        sleep(20)
+        main(sock, data)
+
+
 if __name__ == "__main__":
     """
     @   Función main
@@ -219,4 +229,4 @@ if __name__ == "__main__":
     """
     from service import main_service, decode_response, incode_response, process_db_request
 
-    main_service('usrmn', process_request)  # Use "usrmn" as the service
+    main_service('usrmn', main)  # Use "usrmn" as the service
