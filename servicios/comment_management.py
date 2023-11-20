@@ -8,15 +8,36 @@ from service import main_service, decode_response, incode_response, process_db_r
 *   'leer' para leer, 'create' para insertar, 'delete' para borrar.
 *   Por cada opción puede que existan diferentes opciones, debido a los campos que tiene cada tabla.
 """
+def leer(sock, service, msg):
+    """
+    @   Función para leer un o algunos bloques de horario
+    *   Si el campo 'leer' es 'all', lee todos los bloques de horario sin filtros.
+    *   Si el campo 'leer' es 'some', lee los bloques de horario de acuerdo su id, hora_inicio, hora_fin o dia.
+    """
+    fields: dict = msg['leer']
+    if 'id' not in fields:
+        db_sql = {
+            "sql": "SELECT * FROM bloque"
+        }
+        #   Opción de leer usuarios, habrá que verificar si se desea leer un usuario o muchos
+    else:
+        db_sql = {
+            "sql": "SELECT id FROM bloque WHERE id = :id",
+            "params": {
+                "id": fields['id'],
+            }
+        }
+    db_request = process_db_request(sock, db_sql)
+    return incode_response(service, db_request)
 
-def create(sock, service, msg):
+def crear(sock, service, msg):
     """
     @   Función para insertar un comentario en la tabla comentarios
     *   Recibe un diccionario en "create", el cual debe incluir todos los campos de comentario requeridos.
     *   Ejemplo:    "create": { "usuario_id": "1", "asignacion_id": "2", "texto": "Hola" }
     """
     #   Opción de crear comentarios
-    fields: dict = msg['create']
+    fields: dict = msg['crear']
     if 'usuario_id' and 'asignacion_id' and 'texto' not in fields:
         return incode_response(service, {
             "data": "Incomplete comment fields."
@@ -33,21 +54,49 @@ def create(sock, service, msg):
     db_request = process_db_request(sock, db_sql)
     return incode_response(service, db_request)
 
-def delete(sock, service, msg):
+def modificar(sock, service, msg):
     """
-    @   Función para borrar un comentario de acuerdo a su asignacion_id.
-    *   Ejemplo:    "delete": { "asignacion_id": "2" }
+    @   Función para modificar un usuario
+    *   Ejemplo:    "modificar" : { "usuario": "hola", "nombre": "hola", "cargo": "hola" }
     """
-    #   Opción de borrar comentarios
-    fields: dict = msg['delete']
-    if 'asignacion_id' not in fields:
+    fields: dict = msg['modificar']
+    if 'id' and 'hora_inicio' and 'hora_fin' and 'dia' not in fields:
         return incode_response(service, {
-            "data": "Incomplete comment fields."
+            "data": "Incomplete user fields."
         })
     db_sql = {
-        "sql": "DELETE FROM comentarios WHERE asignacion_id = :asignacion_id",
+        "sql": "UPDATE bloque SET hora_inicio = :hora_inicio, hora_fin = :hora_fin, dia = :dia WHERE id = :id",
         "params": {
-            "asignacion_id": fields['asignacion_id']
+            "id": fields['id'],
+            "hora_inicio": fields['hora_inicio'],
+            "hora_fin": fields['hora_fin'],
+            "dia": fields['dia'],
+        }
+    }
+    db_request = process_db_request(sock, db_sql)
+    return incode_response(service, db_request)
+
+def eliminar(sock, service, msg):
+    """
+    Deletes a block from the database based on the provided ID.
+
+    Args:
+        sock: The socket connection.
+        service: The service name.
+        msg: The message containing the block ID to be deleted.
+
+    Returns:
+        The response from the database operation.
+    """
+    fields: dict = msg['eliminar']
+    if 'id' not in fields:
+        return incode_response(service, {
+            "data": "Incomplete user fields."
+        })
+    db_sql = {
+        "sql": "DELETE FROM bloque WHERE id = :id",
+        "params": {
+            "id": fields['id'],
         }
     }
     db_request = process_db_request(sock, db_sql)
@@ -70,27 +119,35 @@ def process_request(sock, data):
     try:
         msg = json.loads(response)
         if 'leer' in msg:
-            return read(sock=sock, service=service, msg=msg)
-        elif 'create' in msg:
-            return create(sock=sock, service=service, msg=msg)
-        elif 'delete' in msg:
-            return delete(sock=sock, service=service, msg=msg)
+            return leer(sock, service, msg)
+        elif 'crear' in msg:
+            return crear(sock=sock, service=service, msg=msg)
+        elif 'modificar' in msg:
+            return modificar(sock, service, msg)
+        elif 'eliminar' in msg:
+            return eliminar(sock, service, msg)
         else:
             return incode_response(service, {
                 "data": "No valid options."
             })
     except Exception as err:
         return incode_response(service, {
-            "data": "Comment Management Error: " + str(err)
+            "data": "schedule block Error: " + str(err)
         })
 
 def main(sock, data):
+    """
+    @   Función main
+    *   Queda en un loop infinito donde recibe mensajes y los procesa.
+    """
     try:
         return process_request(sock=sock, data=data)
     except Exception as e:
         print("Exception: ", e)
         sleep(20)
         main(sock, data)
+
+
 
 if __name__ == "__main__":
     """
