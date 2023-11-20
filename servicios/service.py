@@ -105,11 +105,15 @@ def process_db_request(sock, sql):
         db_data = json.loads(received_data[7:])
         format_db_data = incode_response('dbcon', db_data)
         decode_db_data = decode_response(format_db_data)
-
         #   Retornamos los datos codificados
         if isinstance(decode_db_data['data'], str):
+            print("sexito4",decode_db_data['data'])
+            return decode_db_data['data']
+        if isinstance(decode_db_data['data'], dict):
+            print("sexito5",decode_db_data['data'])
             return decode_db_data['data']
         else:
+            print("sexito6",decode_db_data['data'])
             return decode_db_data['data']['data']
     except Exception as err:
         return {
