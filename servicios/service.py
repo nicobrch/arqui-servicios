@@ -107,7 +107,10 @@ def process_db_request(sock, sql):
         decode_db_data = decode_response(format_db_data)
 
         #   Retornamos los datos codificados
-        return decode_db_data['data']
+        if isinstance(decode_db_data['data'], str):
+            return decode_db_data['data']
+        else:
+            return decode_db_data['data']['data']
     except Exception as err:
         return {
             "data": "Database Error: " + str(err)

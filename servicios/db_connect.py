@@ -53,22 +53,17 @@ def parse_sql_result_to_json(sql_result):
     if sql_result.returns_rows:
         result_list = []
         column_names = sql_result.keys()
-        row_index = 0
 
         for row in sql_result:
-            row_list = []
+            row_dict = {}
             column_index = 0
 
             for column in column_names:
                 value = str(row[column_index]).strip()
-                row_dict = {
-                    column: value
-                }
-                row_list.append(row_dict)
+                row_dict[column] = value
                 column_index = column_index + 1
 
-            result_list.append({str(row_index): row_list})
-            row_index = row_index + 1
+            result_list.append(row_dict)
 
         return result_list
     else:
