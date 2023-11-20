@@ -1,5 +1,5 @@
 import socket
-import json  
+import json  # Asegúrate de importar la biblioteca json
 
 def valid_fields(user_input, max_length):
     if len(user_input) > max_length:
@@ -34,12 +34,9 @@ def crear_comentario(sock, service):
             "texto": texto
         }
     }
-    print("prueba")
 
     status, data = service_request(sock, service, datos)
     if status == 'OK':
-        # Imprime la información en formato JSON
-        print("Respuesta en formato JSON:", json.dumps(data, indent=2))
         print(f"Se han insertado correctamente {data['affected_rows']} comentarios.")
     else:
         print(f"Ocurrió un error: {data}")
