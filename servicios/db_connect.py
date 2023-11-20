@@ -48,6 +48,9 @@ def parse_sql_result_to_json(sql_result):
     """
     @   Función para parsear el resultado SQL a JSON
     *   El resultado viene dado por filas, así que crea una lista de JSON con la forma { columna : valor }
+    *   Si la query un SELECT, retornará un arreglo con los resultados. El arreglo estará vacío si no hay match.
+    *   Si la query es INSERT, UPDATE o DELETE, retornará un json con la cantidad de filas afectadas. Si esto es 0,
+    *   no se cambió ninguna fila.
     """
     # Check if the result has rows (for SELECT queries)
     if sql_result.returns_rows:
