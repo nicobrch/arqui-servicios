@@ -1,6 +1,6 @@
 CREATE TABLE usuario (
     id serial PRIMARY KEY,
-    usuario char(20) NOT NULL,
+    usuario char(20) UNIQUE NOT NULL,
     nombre char(20) NOT NULL,
     cargo char(20),
     tipo char(10) NOT NULL,
