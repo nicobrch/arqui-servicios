@@ -23,9 +23,8 @@ def main_client():
         try:
             sock.connect(server_address)
             #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
-
             #   Definimos la opción que elija como un diccionario
-            """
+
             while True:
                 menu()
                 opcion = input()
@@ -40,9 +39,9 @@ def main_client():
                     #crear
                     datos = {
                         "crear": {
-                            "hora_inicio": hora_inicio,
-                            "hora_fin": hora_fin,
-                            "dia": dia
+                            "hora_inicio": hora_inicio+"",
+                            "hora_fin": hora_fin+"",
+                            "dia": dia+""
                         }
                     }
                 elif opcion == '2':
@@ -52,7 +51,7 @@ def main_client():
                     #leer
                     datos = {
                         "leer": {
-                            "id": id,
+                            "id": id+"",
                         }
                     }
                 elif opcion == '3':
@@ -65,10 +64,10 @@ def main_client():
                     #modificar
                     datos = {
                         "modificar": {
-                            "id": id,
-                            "hora_inicio": hora_inicio,
-                            "hora_fin": hora_fin,
-                            "dia": dia
+                            "id": id+"",
+                            "hora_inicio": hora_inicio+"",
+                            "hora_fin": hora_fin+"",
+                            "dia": dia+""
                         }
                     }
                 elif opcion == '4':
@@ -78,7 +77,7 @@ def main_client():
                     #eliminar
                     datos = {
                         "eliminar": {
-                            "id": id,
+                            "id": id+"",
                         }
                     }
                 else:
@@ -91,7 +90,7 @@ def main_client():
                 print("Respuesta: ", respuesta)
 
             """
-            
+
             datos = {
                 "crear": {
                     "hora_inicio": "3",
@@ -105,6 +104,7 @@ def main_client():
             respuesta = receive_response(sock)
             print("Respuesta: ", respuesta)
         except ConnectionRefusedError:
+            """
             print(f'No se pudo conectar al bus.')
         except KeyboardInterrupt:
             print(f'Cerrando cliente {service}')

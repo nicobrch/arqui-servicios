@@ -1,6 +1,13 @@
 import socket
 from client import send_message, receive_response
 
+def menu():
+    print("Menu de opciones")
+    print("0. Salir")
+    print("1. Asignar horario")
+    opcion = input("Ingrese una opcion: ")
+    return opcion
+
 def main_client():
     """
     @   Cliente princiapl
@@ -17,6 +24,33 @@ def main_client():
 
             #   Definimos la opción que elija como un diccionario
             #asignar horario
+            while True:
+                opcion = menu()
+                if opcion == '0':
+                    break
+                elif opcion == '1':
+                    print("[ - Asignar horario - ]")
+                    usuario = input("Ingrese un usuario: ")
+                    hora_inicio = input("Ingrese una hora de inicio: ")
+                    hora_fin = input("Ingrese una hora de termino: ")
+                    dia = input("Ingrese un dia de la semana: ")
+                    #   Definimos la opción que elija como un diccionario
+                    datos = {
+                        "asignar": {
+                            "usuario": usuario+"",
+                            "hora_inicio": hora_inicio+"",
+                            "hora_fin": hora_fin+"",
+                            "dia": dia+""
+                        }
+                    }
+                else:
+                    print("Opcion no valida")
+
+                send_message(sock, service, datos)
+                respuesta = receive_response(sock)
+                print("Respuesta: ", respuesta)
+            
+            """ 
             datos = {
                 "asignar": {
                     "usuario": "nico",
@@ -32,6 +66,7 @@ def main_client():
             #   Recibimos la respuesta desde el socket
             respuesta = receive_response(sock)
             print("Respuesta: ", respuesta)
+            """
         except ConnectionRefusedError:
             print(f'No se pudo conectar al bus.')
         except KeyboardInterrupt:

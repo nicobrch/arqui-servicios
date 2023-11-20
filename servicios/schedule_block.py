@@ -44,14 +44,6 @@ def crear(sock, service, msg):
             "dia": fields['dia'],
         }
     }
-    print("a")
-    print(db_sql)
-    print("b")
-    db_request = process_db_request(sock, db_sql)
-    print("c")
-    print(incode_response(service, db_request))
-    print("d")
-    return incode_response(service, db_request)
 
 def modificar(sock, service, msg):
     """
