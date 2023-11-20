@@ -1,5 +1,5 @@
 import socket
-import json  # Asegúrate de importar la biblioteca json
+import json
 
 def valid_fields(user_input, max_length):
     if len(user_input) > max_length:
@@ -8,17 +8,18 @@ def valid_fields(user_input, max_length):
         return False
     return True
 
+
 def input_field(text_input, max_length):
     field = input(text_input)
     while not valid_fields(field, max_length):
-        print(f"Error: Los datos no son correctos. Intente un largo máximo de {max_length} caracteres alfanuméricos.")
+        print(f"Error: Los datos no son correctos. Intente un largo máximo de {max_length} carácteres alfanuméricos.")
         field = input(text_input)
     return field
 
 def service_request(sock, service, datos):
-    # Convierte el diccionario a una cadena JSON antes de enviar
-    data_json = json.dumps(datos)
-    send_message(sock, service, data_json)
+    #   Enviamos el mensaje mediante el socket al servicio
+    send_message(sock, service, datos)
+    #   Recibimos la respuesta desde el socket
     respuesta = receive_response(sock)
     return respuesta['status'], respuesta['data']
 
@@ -41,6 +42,7 @@ def crear_comentario(sock, service):
     else:
         print(f"Ocurrió un error: {data}")
 
+
 def main_client():
     service = 'cment'
     server_address = ('localhost', 5000)
@@ -48,6 +50,9 @@ def main_client():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.connect(server_address)
+
+    
+            
             crear_comentario(sock=sock, service=service)
 
         except ConnectionRefusedError:
@@ -58,6 +63,7 @@ def main_client():
 
         finally:
             sock.close()
+    
 
 if __name__ == "__main__":
     from client import send_message, receive_response
