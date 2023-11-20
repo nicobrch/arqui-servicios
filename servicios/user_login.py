@@ -31,10 +31,10 @@ def login(sock, service, msg):
         "params": fields
     }
     db_request = process_db_request(sock, db_sql)
-    if len(db_request['data']) == 0:
+    if len(db_request) == 0:
         datos = {
-            "usuario": "",
-            "tipo": "",
+            "usuario": "none",
+            "tipo": "none",
             "autenticado": "false",
         }
         write_to_json(datos, "../session.json")
@@ -42,8 +42,7 @@ def login(sock, service, msg):
             "data": "Invalid credentials."
         })
     else:
-        user_data = db_request['data'][0]['0']
-        print("user data: ", user_data)
+        user_data = db_request[0]
         datos = {
             "usuario": user_data['usuario'],
             "tipo": user_data['tipo'],
@@ -62,9 +61,7 @@ def process_request(sock, data):
     """
     decoded_data = decode_response(data)
     service = decoded_data['service']
-    print("data: ", decoded_data)
     response = json.dumps(decoded_data['data'])
-    print("response: ", response)
 
     if service != 'usrlg':
         return incode_response(service, {
