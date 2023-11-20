@@ -33,7 +33,9 @@ def create(sock, service, msg):
         }
     }
     db_request = process_db_request(sock, db_sql)
-    return incode_response(service, db_request)
+    return incode_response(service, {
+        "data": db_request
+    })
 
 
 def read(sock, service, msg):
@@ -49,7 +51,9 @@ def read(sock, service, msg):
             "sql": "SELECT usuario, nombre, cargo, tipo FROM usuario"
         }
         db_request = process_db_request(sock, db_sql)
-        return incode_response(service, db_request)
+        return incode_response(service, {
+            "data": db_request
+        })
     elif msg['leer'] == 'some':
         #   Opción de leer algunos usuarios, dependiendo de los campos.
         if 'usuario' in msg:
@@ -61,7 +65,9 @@ def read(sock, service, msg):
                 }
             }
             db_request = process_db_request(sock, db_sql)
-            return incode_response(service, db_request)
+            return incode_response(service, {
+                "data": db_request
+            })
         elif 'nombre' in msg:
             #   Leer usuario según campo "nombre".
             db_sql = {
@@ -71,7 +77,9 @@ def read(sock, service, msg):
                 }
             }
             db_request = process_db_request(sock, db_sql)
-            return incode_response(service, db_request)
+            return incode_response(service, {
+                "data": db_request
+            })
         elif 'cargo' in msg:
             #   Leer usuario según campo "cargo".
             db_sql = {
@@ -81,7 +89,9 @@ def read(sock, service, msg):
                 }
             }
             db_request = process_db_request(sock, db_sql)
-            return incode_response(service, db_request)
+            return incode_response(service, {
+                "data": db_request
+            })
         elif 'tipo' in msg:
             #   Leer usuario según campo "tipo".
             db_sql = {
@@ -91,7 +101,9 @@ def read(sock, service, msg):
                 }
             }
             db_request = process_db_request(sock, db_sql)
-            return incode_response(service, db_request)
+            return incode_response(service, {
+                "data": db_request
+            })
         else:
             #   No se incluyeron campos de lectura.
             return incode_response(service, {
@@ -122,7 +134,9 @@ def update(sock, service, msg):
             }
         }
         db_request = process_db_request(sock, db_sql)
-        return incode_response(service, db_request)
+        return incode_response(service, {
+            "data": db_request
+        })
     elif 'cargo' in msg:
         #   Actualizar cargo de usuario.
         db_sql = {
@@ -133,7 +147,9 @@ def update(sock, service, msg):
             }
         }
         db_request = process_db_request(sock, db_sql)
-        return incode_response(service, db_request)
+        return incode_response(service, {
+            "data": db_request
+        })
     elif 'tipo' in msg:
         #   Actualizar tipo de usuario.
         db_sql = {
@@ -144,7 +160,9 @@ def update(sock, service, msg):
             }
         }
         db_request = process_db_request(sock, db_sql)
-        return incode_response(service, db_request)
+        return incode_response(service, {
+            "data": db_request
+        })
     elif 'password' in msg:
         #   Actualizar password de usuario.
         db_sql = {
@@ -155,7 +173,9 @@ def update(sock, service, msg):
             }
         }
         db_request = process_db_request(sock, db_sql)
-        return incode_response(service, db_request)
+        return incode_response(service, {
+            "data": db_request
+        })
     else:
         #   No se incluyeron campos para actualizar.
         return incode_response(service, {
@@ -176,7 +196,9 @@ def delete(sock, service, msg):
         }
     }
     db_request = process_db_request(sock, db_sql)
-    return incode_response(service, db_request)
+    return incode_response(service, {
+        "data": db_request
+    })
 
 
 def process_request(sock, data):

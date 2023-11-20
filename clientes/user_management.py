@@ -1,4 +1,5 @@
 import socket
+import json
 
 
 def menu():
@@ -7,40 +8,16 @@ def menu():
     print("[2] Leer Usuarios.")
     print("[3] Actualizar un Usuario.")
     print("[4] Borrar un Usuario.")
-    print("[0] Terminar Programa.")
-
-
-def valid_fields(user_input, max_length):
-    if len(user_input) > max_length:
-        return False
-    if not user_input.isalnum():
-        return False
-    return True
-
-
-def input_field(text_input, max_length):
-    field = input(text_input)
-    while not valid_fields(field, max_length):
-        print(f"Error: Los datos no son correctos. Intente un largo máximo de {max_length} carácteres alfanuméricos.")
-        field = input(text_input)
-    return field
-
-
-def service_request(sock, service, datos):
-    #   Enviamos el mensaje mediante el socket al servicio
-    send_message(sock, service, datos)
-    #   Recibimos la respuesta desde el socket
-    respuesta = receive_response(sock)
-    return respuesta['status'], respuesta['data']
+    print("[0] Salir.")
 
 
 def crear_usuario(sock, service):
     print("[ - Crear Usuario - ]")
     usuario = input_field("Ingrese un usuario: ", max_length=20)
-    nombre = input_field("Ingrese un usuario: ", max_length=20)
-    cargo = input_field("Ingrese un usuario: ", max_length=20)
-    tipo = input_field("Ingrese un usuario: ", max_length=10)
-    password = input_field("Ingrese un usuario: ", max_length=50)
+    nombre = input_field("Ingrese un nombre: ", max_length=20)
+    cargo = input_field("Ingrese un cargo: ", max_length=20)
+    tipo = input_field("Ingrese un tipo: ", max_length=10)
+    password = input_field("Ingrese un password: ", max_length=50)
     #   Definimos la opción que elija como un diccionario
     datos = {
         "crear": {
@@ -57,6 +34,23 @@ def crear_usuario(sock, service):
         print(f"Se han insertado correctamente {data['affected_rows']} usuarios.")
     else:
         print(f"Ocurrió un error: {data}")
+
+
+def leer_usuario(sock, service):
+    print("[ - Leer Usuario - ]")
+    print("[1] Leer todos los usuarios.")
+    print("[2] Buscar por Usuario.")
+    print("[3] Buscar por Nombre.")
+    print("[4] Buscar por Cargo.")
+    print("[5] Buscar por Tipo.")
+    opcion = input()
+    if opcion == '1':
+        datos = {"leer": "all"}
+        status, data = service_request(sock, service, datos)
+        if status == 'OK':
+            print(data)
+        else:
+            print(f"Ocurrió un error: {data}")
 
 
 def main_client():
@@ -81,6 +75,8 @@ def main_client():
                     break
                 elif opcion == '1':
                     crear_usuario(sock=sock, service=service)
+                elif opcion == '2':
+                    leer_usuario(sock=sock, service=service)
 
         except ConnectionRefusedError:
             print(f'No se pudo conectar al bus.')
@@ -93,6 +89,6 @@ def main_client():
 
 
 if __name__ == "__main__":
-    from client import send_message, receive_response
+    from client import input_field, service_request
 
     main_client()
