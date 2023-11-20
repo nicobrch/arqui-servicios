@@ -52,6 +52,7 @@ def crear(sock, service, msg):
         }
     }
     db_request = process_db_request(sock, db_sql)
+    print("sexoooooo",db_request)
     return incode_response(service, db_request)
 
 def modificar(sock, service, msg):

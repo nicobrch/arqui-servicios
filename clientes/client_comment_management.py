@@ -36,9 +36,9 @@ def main_client():
                     #crear
                     datos = {
                         "crear": {
-                            "usuario_id": usuario_id,
-                            "asignacion_id": asignacion_id,
-                            "texto": texto
+                            "usuario_id": usuario_id+"",
+                            "asignacion_id": asignacion_id+"",
+                            "texto": texto+""
                         }
                     }
                 else:
