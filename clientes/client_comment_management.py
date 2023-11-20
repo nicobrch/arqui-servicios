@@ -1,71 +1,78 @@
 import socket
-import json
-
-def valid_fields(user_input, max_length):
-    if len(user_input) > max_length:
-        return False
-    if not user_input.isalnum():
-        return False
-    return True
+from client import send_message, receive_response
 
 
-def input_field(text_input, max_length):
-    field = input(text_input)
-    while not valid_fields(field, max_length):
-        print(f"Error: Los datos no son correctos. Intente un largo máximo de {max_length} carácteres alfanuméricos.")
-        field = input(text_input)
-    return field
-
-def service_request(sock, service, datos):
-    #   Enviamos el mensaje mediante el socket al servicio
-    send_message(sock, service, datos)
-    #   Recibimos la respuesta desde el socket
-    respuesta = receive_response(sock)
-    return respuesta['status'], respuesta['data']
-
-def crear_comentario(sock, service):
-    usuario_id = input_field("Ingrese el Usuario_ID: ", max_length=20)
-    asignacion_id = input_field("Ingrese el Asignacion_ID: ", max_length=20)
-    texto = input_field("Ingrese el texto del comentario: ", max_length=20)
-
-    datos = {
-        "create": {
-            "usuario_id": usuario_id,
-            "asignacion_id": asignacion_id,
-            "texto": texto
-        }
-    }
-
-    status, data = service_request(sock, service, datos)
-    if status == 'OK':
-        print(f"Se han insertado correctamente {data['affected_rows']} comentarios.")
-    else:
-        print(f"Ocurrió un error: {data}")
+def menu():
+    print("{ -- Servicio de Manejo de Usuarios -- }")
+    print("[1] Crear comentario.")
 
 
 def main_client():
+    """
+    @   Cliente princiapl
+    *   Todos los clientes deben tener esta función para ser cliente. Se conecta al bus en localhost y puerto 5000.
+    *   Dentro del try se programa la lógica correspondiente al servicio.
+    """
     service = 'cment'
     server_address = ('localhost', 5000)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.connect(server_address)
+            #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
+            #   Definimos la opción que elija como un diccionario
 
-    
-            
-            crear_comentario(sock=sock, service=service)
+            while True:
+                menu()
+                opcion = input()
+                if opcion == '0':
+                    break
+                elif opcion == '1':
+                    print("[ - Crear comentario - ]")
+                    usuario_id = input("Ingrese el Usuario_ID: ")
+                    asignacion_id = input("Ingrese el Asignacion_ID: ")
+                    texto = input("Ingrese el texto del comentario: ")
+                    #   Definimos la opción que elija como un diccionario
+                    #crear
+                    datos = {
+                        "crear": {
+                            "usuario_id": usuario_id,
+                            "asignacion_id": asignacion_id,
+                            "texto": texto
+                        }
+                    }
+                else:
+                    print("Opcion no valida")
+                    continue
+                
+                send_message(sock, service, datos)
+                #   Recibimos la respuesta desde el socket
+                respuesta = receive_response(sock)
+                print("Respuesta: ", respuesta)
 
+            """
+
+            datos = {
+                "crear": {
+                    "usuario_id": "7",
+                    "asignacion_id": "7",
+                    "texto": "texto"
+                }
+            }
+            #   Enviamos el mensaje mediante el socket al servicio
+            send_message(sock, service, datos)
+            #   Recibimos la respuesta desde el socket
+            respuesta = receive_response(sock)
+            print("Respuesta: ", respuesta)
         except ConnectionRefusedError:
+            """
             print(f'No se pudo conectar al bus.')
-
         except KeyboardInterrupt:
             print(f'Cerrando cliente {service}')
-
         finally:
             sock.close()
-    
+
 
 if __name__ == "__main__":
-    from client import send_message, receive_response
 
     main_client()
