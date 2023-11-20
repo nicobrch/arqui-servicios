@@ -58,3 +58,27 @@ def receive_response(sock):
     except Exception as e:
         print(f'Error inesperado: {e}')
         raise RuntimeError('Ocurrio un error inesperado.')
+
+
+def valid_fields(user_input, max_length):
+    if len(user_input) > max_length:
+        return False
+    if not user_input.isalnum():
+        return False
+    return True
+
+
+def input_field(text_input, max_length):
+    field = input(text_input)
+    while not valid_fields(field, max_length):
+        print(f"Error: Los datos no son correctos. Intente un largo máximo de {max_length} carácteres alfanuméricos.")
+        field = input(text_input)
+    return field
+
+
+def service_request(sock, service, datos):
+    #   Enviamos el mensaje mediante el socket al servicio
+    send_message(sock, service, datos)
+    #   Recibimos la respuesta desde el socket
+    respuesta = receive_response(sock)
+    return respuesta['status'], respuesta['data']
