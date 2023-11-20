@@ -17,7 +17,7 @@ def create(sock, service, msg):
     """
     #   Opción de crear comentarios
     fields: dict = msg['create']
-    if 'usuario_id' not in fields or 'asignacion_id' not in fields or 'texto' not in fields:
+    if 'usuario_id' and 'asignacion_id' and 'texto' not in fields:
         return incode_response(service, {
             "data": "Incomplete comment fields."
         })
