@@ -1,8 +1,10 @@
 import socket
-from client import input_field, service_request, print_select, print_ins_del_upd, get_session
+from client import input_field, service_request, print_select, print_ins_del_upd, get_session, auth_session
+
+session = get_session()
 
 
-def crear_comentario(sock, service):
+def crear_comentario_admin(sock, service):
     while True:
         print("[ - Hacer un Comentario - ]")
         print("[1] Buscar Asignaciones por Usuario.")
@@ -14,11 +16,11 @@ def crear_comentario(sock, service):
             print("Volviendo...")
             break
         elif opcion == '1':
-            session = get_session()
-            if 'id' not in session:
-                print('Usuario no autenticado. Por favor inicie sesión.')
+            #   Verificar que la sesión este autorizada y tenga permisos
+            if not auth_session(session=session, tipo='admin'):
                 break
 
+            #   Definir usuario a buscar
             usuario = input_field("Ingrese usuario a buscar: ", max_length=20)
             datos = {
                 "leer": "some",
@@ -26,21 +28,29 @@ def crear_comentario(sock, service):
             }
             #   Enviamos los datos al servicio
             status, user_data = service_request(sock, 'usrmn', datos)
-            if 'id' not in user_data:
+            user = user_data[0]
+            if 'id' not in user:
                 print('No existe el usuario indicado.')
                 break
 
+            #   Buscar asignaciones del usuario
             datos = {
                 "leer": "some",
-                "usuario_id": user_data['id']
+                "usuario_id": user['id']
             }
             #   Enviamos los datos al servicio
             status, assign_data = service_request(sock, 'asign', datos)
+
+            if len(assign_data) == 0:
+                print("No existen asignaciones para el usuario. Cree una asignacion primero.")
+                break
+
             print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
             print_select(status, assign_data)
             id_asignacion = input()
-            texto = input("Ingrese comentario: ")
+            texto = input_field("Ingrese comentario: ", max_length=100)
 
+            #   Crear comentario
             datos = {
                 "crear": {
                     "usuario_id": session['id'],
@@ -52,32 +62,40 @@ def crear_comentario(sock, service):
             status, comment_data = service_request(sock, service, datos)
             print_ins_del_upd(status, comment_data)
         elif opcion == '2':
-            session = get_session()
-            if 'id' not in session:
-                print('Usuario no autenticado. Por favor inicie sesión.')
+            #   Verificar que la sesión este autorizada y tenga permisos
+            if not auth_session(session=session, tipo='admin'):
                 break
 
-            dia = input_field("Ingrese dia de bloque a buscar: ", max_length=10)
             datos = {
-                "leer": "some",
-                "dia": dia
+                "leer": "all"
             }
             #   Enviamos los datos al servicio
             status, block_data = service_request(sock, 'block', datos)
+
+            if len(block_data) == 0:
+                print("No existen bloques en este momento.")
+                break
+
             print("=== SELECCIONE UN ID DE BLOQUE ===")
             print_select(status, block_data)
             id_bloque = input()
 
+            #   Buscar asignaciones correspondientes al bloque
             datos = {
                 "leer": "some",
                 "bloque_id": id_bloque
             }
             #   Enviamos los datos al servicio
             status, assign_data = service_request(sock, 'asign', datos)
+
+            if len(assign_data) == 0:
+                print("No existen asignaciones para el bloque. Cree una asignacion primero.")
+                break
+
             print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
             print_select(status, assign_data)
             id_asignacion = input()
-            texto = input("Ingrese comentario: ")
+            texto = input_field("Ingrese comentario: ", max_length=100)
 
             datos = {
                 "crear": {
@@ -91,55 +109,69 @@ def crear_comentario(sock, service):
             print_ins_del_upd(status, comment_data)
 
 
-def leer_usuario(sock, service):
-    print("[ - Leer Comentarios - ]")
-    print("[1] Leer todos los usuarios.")
-    print("[2] Buscar por Usuario.")
-    print("[3] Buscar por Nombre.")
-    print("[4] Buscar por Cargo.")
-    print("[5] Buscar por Tipo.")
-    opcion = input()
+def leer_comentarios_admin(sock, service):
+    print("[ - Leer Comentarios por Asignación - ]")
+    #   Verificar que la sesión este autorizada y tenga permisos
+    session = get_session()
+    if not auth_session(session=session, tipo='admin'):
+        return
 
-    if opcion == '1':
-        datos = {
-            "leer": "all"
-        }
-        status, data = service_request(sock, service, datos)
-        print_select(status, data)
-    elif opcion == '2':
-        usuario = input_field("Ingrese usuario a buscar: ", max_length=20)
-        datos = {
-            "leer": "some",
-            "usuario": usuario
-        }
-        status, data = service_request(sock, service, datos)
-        print_select(status, data)
-    elif opcion == '3':
-        nombre = input_field("Ingrese nombre a buscar: ", max_length=20)
-        datos = {
-            "leer": "some",
-            "nombre": nombre
-        }
-        status, data = service_request(sock, service, datos)
-        print_select(status, data)
-    elif opcion == '4':
-        cargo = input_field("Ingrese cargo a buscar: ", max_length=20)
-        datos = {
-            "leer": "some",
-            "cargo": cargo
-        }
-        status, data = service_request(sock, service, datos)
-        print_select(status, data)
-    elif opcion == '5':
-        tipo = input_field("Ingrese tipo a buscar: ", max_length=10)
-        datos = {
-            "leer": "some",
-            "tipo": tipo
-        }
-        status, data = service_request(sock, service, datos)
-        print_select(status, data)
-    else:
-        print("No existe esa opción.")
+    datos = {
+        "leer": "all"
+    }
+    #   Obtenemos todas las asignaciones
+    status, assign_data = service_request(sock, 'asign', datos)
+
+    if len(assign_data) == 0:
+        print("No existen asignaciones en este momento.")
+        return
+
+    #   Dejamos que el usuario seleccione una asignacion por su id
+    print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
+    print_select(status, assign_data)
+    id_asignacion = input()
+
+    #   Leer comentarios según ID de asignación
+    datos = {
+        "leer": "some",
+        "asignacion_id": id_asignacion
+    }
+    #   Enviamos los datos al servicio
+    status, comment_data = service_request(sock, service, datos)
+    print_ins_del_upd(status, comment_data)
+
+
+def leer_comentarios_personal(sock, service):
+    print("[ - Leer Comentarios por Asignación - ]")
+    #   Verificar que la sesión este autorizada y tenga permisos
+    session = get_session()
+    if not auth_session(session=session, tipo='personal'):
+        return
+
+    datos = {
+        "leer": "some",
+        "usuario_id": session['id']
+    }
+    #   Obtenemos todas las asignaciones
+    status, assign_data = service_request(sock, 'asign', datos)
+
+    if len(assign_data) == 0:
+        print("No existen asignaciones en este momento para ti.")
+        return
+
+    #   Dejamos que el usuario seleccione una asignacion por su id
+    print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
+    print_select(status, assign_data)
+    id_asignacion = input()
+
+    #   Leer comentarios según ID de asignación
+    datos = {
+        "leer": "some",
+        "asignacion_id": id_asignacion
+    }
+    #   Enviamos los datos al servicio
+    status, comment_data = service_request(sock, service, datos)
+    print_ins_del_upd(status, comment_data)
 
 
 def main_client():
@@ -155,25 +187,48 @@ def main_client():
         try:
             sock.connect(server_address)
 
-            while True:
-                print("{ -- Servicio de Comentarios -- }")
-                print("[1] Hacer un Comentario.")
-                print("[2] Leer Comentarios.")
-                print("[0] Salir.")
-                opcion = input()
+            if auth_session(session=session, tipo='admin'):
+                while True:
+                    print("{ -- Servicio de Comentarios -- }")
+                    print("[1] Hacer un Comentario.")
+                    print("[2] Leer Comentarios.")
+                    print("[0] Salir.")
+                    opcion = input()
 
-                if opcion == '0':
-                    print("Saliendo del servicio de manejo de usuarios...")
-                    break
+                    if opcion == '0':
+                        print("Saliendo del servicio de manejo de usuarios...")
+                        break
 
-                elif opcion == '1':
-                    crear_comentario(sock=sock, service=service)
+                    elif opcion == '1':
+                        crear_comentario_admin(sock=sock, service=service)
 
-                elif opcion == '2':
-                    leer_usuario(sock=sock, service=service)
+                    elif opcion == '2':
+                        leer_comentarios_admin(sock=sock, service=service)
 
-                else:
-                    print("Opción erronea. Intente nuevamente.")
+                    else:
+                        print("Opción erronea. Intente nuevamente.")
+            elif auth_session(session=session, tipo='personal'):
+                while True:
+                    print("{ -- Servicio de Comentarios -- }")
+                    print("[1] Ver mis comentarios por mis asignaciones.")
+                    print("[2] Crear un comentario en mis asignaciones.")
+                    print("[0] Salir.")
+                    opcion = input()
+
+                    if opcion == '0':
+                        print("Saliendo del servicio de manejo de usuarios...")
+                        break
+
+                    elif opcion == '1':
+                        crear_comentario_admin(sock=sock, service=service)
+
+                    elif opcion == '2':
+                        leer_comentarios_personal(sock=sock, service=service)
+
+                    else:
+                        print("Opción erronea. Intente nuevamente.")
+            else:
+                print("No existe una sesión actualmente.")
 
         except ConnectionRefusedError:
             print(f'No se pudo conectar al bus.')
