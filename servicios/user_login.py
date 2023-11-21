@@ -9,11 +9,6 @@ from time import sleep
 """
 
 
-def write_to_json(data, filename):
-    with open(filename, 'w') as json_file:
-        json.dump(data, json_file, indent=2)
-
-
 def login(sock, service, msg):
     """
     @   Función para insertar un usuario en la tabla usuario
@@ -27,18 +22,27 @@ def login(sock, service, msg):
             "data": "Incomplete user fields."
         })
     db_sql = {
-        "sql": "SELECT usuario, nombre, tipo FROM usuario WHERE usuario = :usuario AND password = :password",
+        "sql": "SELECT id, usuario, nombre, cargo, tipo FROM usuario WHERE usuario = :usuario AND password = :password",
         "params": fields
     }
     db_request = process_db_request(sock, db_sql)
     if len(db_request) == 0:
+        datos = {
+            "id": "",
+            "usuario": "",
+            "cargo": "",
+            "tipo": "",
+            "autenticado": "false",
+        }
         return incode_response(service, {
-            "data": "Invalid credentials."
+            "data": datos
         })
     else:
         user_data = db_request[0]
         datos = {
+            "id": user_data['id'],
             "usuario": user_data['usuario'],
+            "cargo": user_data['cargo'],
             "tipo": user_data['tipo'],
             "autenticado": "true",
         }

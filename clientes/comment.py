@@ -19,7 +19,7 @@ def print_ins_del_upd(status, data):
 
 
 def crear_usuario(sock, service):
-    print("[ - Crear Usuario - ]")
+    print("[ - Hacer un Comentario - ]")
     usuario = input_field("Ingrese un usuario: ", max_length=20)
     #   Definimos la opción que elija como un diccionario
     datos = {
@@ -81,72 +81,6 @@ def leer_usuario(sock, service):
         print("No existe esa opción.")
 
 
-def actualizar_usuario(sock, service):
-    print("[ - Actualizar Usuario - ]")
-    print("[1] Actualizar Nombre.")
-    print("[2] Actualizar Cargo.")
-    print("[3] Actualizar Tipo.")
-    print("[4] Actualizar Password.")
-    opcion = input()
-
-    usuario = input_field("Ingrese usuario a actualizar: ", max_length=20)
-
-    if opcion == '1':
-        nombre = input_field("Ingrese nuevo nombre: ", max_length=20)
-        datos = {
-            "actualizar": {
-                "usuario": usuario,
-                "nombre": nombre
-            }
-        }
-        status, data = service_request(sock, service, datos)
-        print_ins_del_upd(status, data)
-    elif opcion == '2':
-        cargo = input_field("Ingrese nuevo cargo: ", max_length=20)
-        datos = {
-            "actualizar": {
-                "usuario": usuario,
-                "cargo": cargo
-            }
-        }
-        status, data = service_request(sock, service, datos)
-        print_ins_del_upd(status, data)
-    elif opcion == '3':
-        tipo = input_field("Ingrese nuevo tipo: ", max_length=10)
-        datos = {
-            "actualizar": {
-                "usuario": usuario,
-                "tipo": tipo
-            }
-        }
-        status, data = service_request(sock, service, datos)
-        print_ins_del_upd(status, data)
-    elif opcion == '4':
-        password = input_field("Ingrese nueva password: ", max_length=50)
-        datos = {
-            "actualizar": {
-                "usuario": usuario,
-                "password": password
-            }
-        }
-        status, data = service_request(sock, service, datos)
-        print_ins_del_upd(status, data)
-    else:
-        print("No existe esa opción.")
-
-
-def borrar_usuario(sock, service):
-    print("[ - Borrar Usuario - ]")
-    usuario = input_field("Ingrese un usuario: ", max_length=20)
-    #   Definimos la opción que elija como un diccionario
-    datos = {
-        "borrar": usuario
-    }
-    #   Enviamos los datos al servicio
-    status, data = service_request(sock, service, datos)
-    print_ins_del_upd(status, data)
-
-
 def main_client():
     """
     @   Cliente princiapl
@@ -161,11 +95,9 @@ def main_client():
             sock.connect(server_address)
 
             while True:
-                print("{ -- Servicio de Manejo de Usuarios -- }")
-                print("[1] Crear un Usuario.")
-                print("[2] Leer Usuarios.")
-                print("[3] Actualizar un Usuario.")
-                print("[4] Borrar un Usuario.")
+                print("{ -- Servicio de Comentarios -- }")
+                print("[1] Hacer un Comentario.")
+                print("[2] Leer Comentarios.")
                 print("[0] Salir.")
                 opcion = input()
 
@@ -178,12 +110,6 @@ def main_client():
 
                 elif opcion == '2':
                     leer_usuario(sock=sock, service=service)
-
-                elif opcion == '3':
-                    actualizar_usuario(sock=sock, service=service)
-
-                elif opcion == '4':
-                    borrar_usuario(sock=sock, service=service)
 
                 else:
                     print("Opción erronea. Intente nuevamente.")

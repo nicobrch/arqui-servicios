@@ -28,12 +28,15 @@ def main_client():
                 #   Enviamos los datos al servicio
                 status, data = service_request(sock, service, datos)
                 if status == 'OK':
-                    if data == "Invalid credentials.":
-                        print("Credenciales inválidas, intente nuevamente.")
-                    else:
-                        print(f"Inicio de sesión exitoso.")
+                    autenticacion = data['autenticado']
+                    if autenticacion == 'true':
+                        save_session(data)
+                        print(f"Inicio de sesión exitoso. Se iniciará el servicio.")
                         sock.close()
                         sys.exit()
+                    else:
+                        save_session(data)
+                        print("Credenciales inválidas, intente nuevamente.")
                 else:
                     print(f"Ocurrió un error: {data}")
 
@@ -48,6 +51,6 @@ def main_client():
 
 
 if __name__ == "__main__":
-    from client import input_field, service_request
+    from client import input_field, service_request, save_session
 
     main_client()

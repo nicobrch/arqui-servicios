@@ -85,6 +85,17 @@ def service_request(sock, service, datos):
     return respuesta['status'], respuesta['data']
 
 
+def save_session(data):
+    with open('./session.json', 'w') as json_file:
+        json.dump(data, json_file, indent=2)
+
+
+def get_session():
+    with open('./session.json', 'r') as json_file:
+        data = json.load(json_file)
+    return data
+
+
 def print_table(data):
     headers = data[0].keys()  # Assuming all dictionaries have the same keys
     table = []
