@@ -24,8 +24,8 @@ CREATE TABLE asignacion (
     bloque_id int NOT NULL,
     created_at date DEFAULT current_date NOT NULL,
     updated_at date DEFAULT current_date NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-    FOREIGN KEY (bloque_id) REFERENCES bloque(id)
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE ,
+    FOREIGN KEY (bloque_id) REFERENCES bloque(id) ON DELETE CASCADE
 );
 
 CREATE TABLE comentarios (
@@ -34,8 +34,8 @@ CREATE TABLE comentarios (
     asignacion_id int NOT NULL,
     texto char(100) NOT NULL,
     created_at date DEFAULT current_date NOT NULL,
-    FOREIGN KEY (usuario_id) REFERENCES usuario(id),
-    FOREIGN KEY (asignacion_id) REFERENCES asignacion(id)
+    FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE,
+    FOREIGN KEY (asignacion_id) REFERENCES asignacion(id) ON DELETE CASCADE
 );
 
 INSERT INTO usuario (usuario, nombre, cargo, tipo, password)
