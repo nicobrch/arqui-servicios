@@ -36,7 +36,7 @@ if __name__ == "__main__":
             elif choice.isdigit() and 1 <= int(choice) <= 8:
                 file_name = [
                     "asign_block.py",
-                    "client_comment_management.py",
+                    "comment.py",
                     "schedule_block.py",
                     "user_management.py"
                 ][int(choice) - 1]
@@ -54,7 +54,7 @@ if __name__ == "__main__":
             elif choice.isdigit() and 1 <= int(choice) <= 8:
                 file_name = [
                     "asign_block.py",
-                    "client_comment_management.py",
+                    "comment.py",
                 ][int(choice) - 1]
                 # Si es necesario se podria de aqui mismo iniciar el servicio tambien
                 execute_file(file_name)
