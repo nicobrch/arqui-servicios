@@ -32,11 +32,6 @@ def login(sock, service, msg):
     }
     db_request = process_db_request(sock, db_sql)
     if len(db_request) == 0:
-        datos = {
-            "usuario": "none",
-            "tipo": "none",
-            "autenticado": "false",
-        }
         return incode_response(service, {
             "data": "Invalid credentials."
         })
@@ -85,7 +80,7 @@ def main(sock, data):
         return process_request(sock=sock, data=data)
     except Exception as e:
         print("Exception: ", e)
-        sleep(20)
+        sleep(5)
         main(sock, data)
 
 

@@ -37,10 +37,8 @@ def execute_sql_query(sql, params):
     session = connect()
     if params is not None:
         result = session.execute(text(sql), params)
-        print("SEXO:", result)
     else:
         result = session.execute(text(sql))
-        print("SEXO2 :", result)
     session.commit()
     session.close()
     return result
@@ -85,11 +83,8 @@ def process_request(sock, data):
     *   el servicio que llame al servicio 'dbcon'
     """
     decoded_data = decode_response(data)
-    print("decoded_data: ", decoded_data)
     service = decoded_data['service']
-    print("service: ", service)
     response = json.dumps(decoded_data['data'])
-    print("response: ", response)
 
     if service != 'dbcon':
         return incode_response(service, {
@@ -113,9 +108,7 @@ def process_request(sock, data):
 
         #   Se ejecuta la query usando las funciones
         sql_result = execute_sql_query(sql, params)
-        print("SQL Result: ", sql_result)
         json_result = parse_sql_result_to_json(sql_result)
-        print("JSON Result: ", json_result)
 
         #   Se devuelven los resultados mediante le campo 'data'
         return incode_response(service, {
