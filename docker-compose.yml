@@ -25,3 +25,43 @@ services:
     restart: always
     ports:
       - "5000:5000"
+
+  # ----------- servicios ----------- #
+  dbcon-service:
+    container_name: dbcon-service
+    restart: always
+    build:
+      context: ./servicios
+      dockerfile: Dockerfile
+    command: sh -c "sleep 6 && python -u db_connect.py"
+    volumes:
+      - ./servicios:/app/
+    depends_on:
+      - postgres
+      - bus
+
+  usrlg-service:
+    container_name: usrlg-service
+    restart: always
+    build:
+      context: ./servicios
+      dockerfile: Dockerfile
+    command: sh -c "sleep 6 && python -u user_login.py"
+    volumes:
+      - ./servicios:/app/
+    depends_on:
+      - postgres
+      - bus
+
+  usrmn-service:
+    container_name: usrmn-service
+    restart: always
+    build:
+      context: ./servicios
+      dockerfile: Dockerfile
+    command: sh -c "sleep 6 && python -u user_management.py"
+    volumes:
+      - ./servicios:/app/
+    depends_on:
+      - postgres
+      - bus

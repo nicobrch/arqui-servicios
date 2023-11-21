@@ -108,13 +108,11 @@ def process_db_request(sock, sql):
         #   Retornamos los datos codificados
         if isinstance(decode_db_data['data'], str):
             return decode_db_data['data']
-        if isinstance(decode_db_data['data'], dict):
-            return decode_db_data['data']
         else:
             return decode_db_data['data']['data']
     except Exception as err:
         return {
-            "data": "Database Error: " + str(err)
+            "data": "Error de Process DB Request: " + str(err)
         }
 
 
@@ -139,7 +137,38 @@ def user_id_request(sock, datos):
         format_request_data = incode_response('usrmn', request_data)
         decode_request_data = decode_response(format_request_data)
         #   Retornamos los datos codificados
-        if isinstance(decode_request_data['data'], str):
+        if isinstance(decode_request_data['data']['data'], str):
+            return decode_request_data['data']['data']
+        else:
+            return decode_request_data['data']['data']['data']
+    except Exception as err:
+        return {
+            "data": "User Management Service Error: " + str(err)
+        }
+
+
+def block_id_request(sock, datos):
+    """
+    @   Conexión al servicio de Usuario
+    *   Esta función recibe un JSON { "leer": "some", "usuario": "hola" }
+    *   Retorna un 'ID' de usuario como STRING.
+    """
+    try:
+        #   Hacemos el request al servicio 'dbcon' igual que con cualquier otro servicio
+        usr_request = incode_response('block', datos)
+        print(f'Requesting data from User Service: {usr_request}')
+        send_message(sock, usr_request)
+        print(f'Waiting for response...')
+        expected_length = int(receive_message(sock, 5).decode('utf-8'))
+        received_data = receive_message(sock, expected_length)
+        print(f'Received data: {received_data}')
+
+        #   Los datos se encuentran en bytes, es necesario codificar los datos
+        request_data = json.loads(received_data[7:])
+        format_request_data = incode_response('block', request_data)
+        decode_request_data = decode_response(format_request_data)
+        #   Retornamos los datos codificados
+        if isinstance(decode_request_data['data']['data'], str):
             return decode_request_data['data']['data']
         else:
             return decode_request_data['data']['data']['data']
@@ -218,7 +247,7 @@ def main_service(service, process_request):
     *   Cuando llega una transaccion, es procesada por la función 'process_request' de cada servicio.
     *   El resultado del procesamiento lo decodificamos para posteriormente codificarlo y enviarlo.
     """
-    server_address = ('localhost', 5000)
+    server_address = ('soabus', 5000)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:

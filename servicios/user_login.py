@@ -37,7 +37,6 @@ def login(sock, service, msg):
             "tipo": "none",
             "autenticado": "false",
         }
-        write_to_json(datos, "../session.json")
         return incode_response(service, {
             "data": "Invalid credentials."
         })
@@ -48,9 +47,8 @@ def login(sock, service, msg):
             "tipo": user_data['tipo'],
             "autenticado": "true",
         }
-        write_to_json(datos, "../session.json")
         return incode_response(service, {
-            "data": db_request
+            "data": datos
         })
 
 

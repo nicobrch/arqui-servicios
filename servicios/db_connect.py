@@ -21,7 +21,7 @@ def connect():
     @   Función para crear una sesión
     *   Se conecta a la BDD usando SQLAlchemy. La BDD debe estar corriendo en el docker compose.
     """
-    db_url = f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+    db_url = f"postgresql://postgres:postgres@postgres:5432/arquisw"
     Base = declarative_base()
     engine = create_engine(db_url)
     Base.metadata.create_all(engine)
@@ -37,8 +37,10 @@ def execute_sql_query(sql, params):
     session = connect()
     if params is not None:
         result = session.execute(text(sql), params)
+        print("SEXO:", result)
     else:
         result = session.execute(text(sql))
+        print("SEXO2 :", result)
     session.commit()
     session.close()
     return result
@@ -83,8 +85,11 @@ def process_request(sock, data):
     *   el servicio que llame al servicio 'dbcon'
     """
     decoded_data = decode_response(data)
+    print("decoded_data: ", decoded_data)
     service = decoded_data['service']
+    print("service: ", service)
     response = json.dumps(decoded_data['data'])
+    print("response: ", response)
 
     if service != 'dbcon':
         return incode_response(service, {
@@ -108,7 +113,9 @@ def process_request(sock, data):
 
         #   Se ejecuta la query usando las funciones
         sql_result = execute_sql_query(sql, params)
+        print("SQL Result: ", sql_result)
         json_result = parse_sql_result_to_json(sql_result)
+        print("JSON Result: ", json_result)
 
         #   Se devuelven los resultados mediante le campo 'data'
         return incode_response(service, {
@@ -116,7 +123,7 @@ def process_request(sock, data):
         })
     except Exception as err:
         return incode_response(service, {
-            "data": "Database Error: " + str(err)
+            "data": "Error de BDD procesando la solicitud: " + str(err)
         })
 
 
@@ -125,7 +132,7 @@ def main(sock, data):
         return process_request(sock=sock, data=data)
     except Exception as e:
         print("Exception: ", e)
-        sleep(20)
+        sleep(5)
         main(sock, data)
 
 
