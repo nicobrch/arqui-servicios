@@ -10,7 +10,7 @@ def print_menu():
 
 def execute_file(file_name):
     try:
-        os.system(f"python3 {file_name}")
+        os.system(f"python {file_name}")
     except Exception as e:
         print(f"Error al ejecutar el archivo {file_name}: {e}")
 
