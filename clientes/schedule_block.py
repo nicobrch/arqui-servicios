@@ -19,8 +19,8 @@ def print_rud(status, data):
 
 def crear_bloque_horario(sock, service):
     print("[ - Crear bloque de horario - ]")
-    hora_inicio = input_field("Ingrese una hora de inicio: ", max_length=3)
-    hora_fin = input_field("Ingrese una hora de termino: ", max_length=3)
+    hora_inicio = input_field("Ingrese una hora de inicio: ", max_length=4)
+    hora_fin = input_field("Ingrese una hora de termino: ", max_length=4)
     dia = input_field("Ingrese un dia de la semana: ", max_length=20)
     #   Definimos la opción que elija como un diccionario
     datos = {
@@ -50,7 +50,7 @@ def leer_bloque_horario(sock, service):
         status, data = service_request(sock, service, datos)
         print_select(status, data)
     elif opcion == '2':
-        id = input_field("Ingrese id a buscar: ", max_length=3)
+        id = input_field("Ingrese id a buscar: ", max_length=4)
         datos = {
             "leer": "some",
             "id": id
@@ -58,7 +58,7 @@ def leer_bloque_horario(sock, service):
         status, data = service_request(sock, service, datos)
         print_select(status, data)
     elif opcion == '3':
-        hora_inicio = input_field("Ingrese hora de inicio a buscar: ", max_length=3)
+        hora_inicio = input_field("Ingrese hora de inicio a buscar: ", max_length=4)
         datos = {
             "leer": "some",
             "hora_inicio": hora_inicio
@@ -66,7 +66,7 @@ def leer_bloque_horario(sock, service):
         status, data = service_request(sock, service, datos)
         print_select(status, data)
     elif opcion == '4':
-        hora_fin = input_field("Ingrese hora de termino a buscar: ", max_length=3)
+        hora_fin = input_field("Ingrese hora de termino a buscar: ", max_length=4)
         datos = {
             "leer": "some",
             "hora_fin": hora_fin
@@ -94,7 +94,7 @@ def actualizar_bloque_horario(sock, service):
     id = input_field("Ingrese id a buscar: ", max_length=3)
 
     if opcion == '1':
-        hora_inicio = input_field("Ingrese hora de inicio a actualizar: ", max_length=3)
+        hora_inicio = input_field("Ingrese hora de inicio a actualizar: ", max_length=4)
         datos = {
             "modificar": {
                 "id": id,
@@ -104,7 +104,7 @@ def actualizar_bloque_horario(sock, service):
         status, data = service_request(sock, service, datos)
         print_rud(status, data)
     elif opcion == '2':
-        hora_fin = input_field("Ingrese hora de termino a actualizar: ", max_length=3)
+        hora_fin = input_field("Ingrese hora de termino a actualizar: ", max_length=4)
         datos = {
             "modificar": {
                 "id": id,
@@ -153,12 +153,13 @@ def main_client():
             #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
             #   Definimos la opción que elija como un diccionario
             while True:
-                print("{ -- Servicio de Manejo de Usuarios -- }")
-                print("[1] Crear un Usuario.")
-                print("[2] Leer Usuarios.")
-                print("[3] Actualizar un Usuario.")
-                print("[4] Borrar un Usuario.")
+                print("{ -- Servicio de Manejo de bloques de horario -- }")
+                print("[1] Crear bloque de horario.")
+                print("[2] Leer bloque de horario.")
+                print("[3] Actualizar bloque de horario.")
+                print("[4] Eliminar bloque de horario.")
                 print("[0] Salir.")
+
                 opcion = input()
 
                 if opcion == '0':

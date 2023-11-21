@@ -1,12 +1,41 @@
 import socket
-from client import send_message, receive_response
+from client import input_field, service_request, print_table
 
-def menu():
-    print("Menu de opciones")
-    print("0. Salir")
-    print("1. Asignar horario")
-    opcion = input("Ingrese una opcion: ")
-    return opcion
+def print_select(status, data):
+    if status == 'OK':
+        if isinstance(data, list):
+            print_table(data)
+        else:
+            print(data)
+    else:
+        print(f"Ocurrió un error: {data}")
+
+
+def print_rud(status, data):
+    if status == 'OK':
+        print(data)
+    else:
+        print(f"Ocurrió un error: {data}")
+
+def asignar_horario(sock, service):
+    print("[ - Asignar horario - ]")
+    usuario = input_field("Ingrese un usuario: ", max_length=20)
+    hora_inicio = input_field("Ingrese una hora de inicio: ", max_length=4)
+    hora_fin = input_field("Ingrese una hora de termino: ", max_length=4)
+    dia = input_field("Ingrese un dia de la semana: ", max_length=20)
+    #   Definimos la opción que elija como un diccionario
+    datos = {
+        "asignar": {
+            "usuario": usuario,
+            "hora_inicio": hora_inicio,
+            "hora_fin": hora_fin,
+            "dia": dia
+        }
+    }
+    #   Enviamos los datos al servicio
+    status, data = service_request(sock, service, datos)
+    print_rud(status, data)
+
 
 def main_client():
     """
@@ -21,52 +50,20 @@ def main_client():
         try:
             sock.connect(server_address)
             #   Acá deberíamos hacer un while true para que el usuario ingrese que desea realizar
-
             #   Definimos la opción que elija como un diccionario
             #asignar horario
             while True:
-                opcion = menu()
+                print("[ - Asignar horario - ]")
+                print("0: Salir")
+                print("1: Asignar horario")
+                opcion = input("Ingrese una opcion: ")
+
                 if opcion == '0':
                     break
                 elif opcion == '1':
-                    print("[ - Asignar horario - ]")
-                    usuario = input("Ingrese un usuario: ")
-                    hora_inicio = input("Ingrese una hora de inicio: ")
-                    hora_fin = input("Ingrese una hora de termino: ")
-                    dia = input("Ingrese un dia de la semana: ")
-                    #   Definimos la opción que elija como un diccionario
-                    datos = {
-                        "asignar": {
-                            "usuario": usuario+"",
-                            "hora_inicio": hora_inicio+"",
-                            "hora_fin": hora_fin+"",
-                            "dia": dia+""
-                        }
-                    }
+                    asignar_horario(sock=sock, service=service)
                 else:
                     print("Opcion no valida")
-
-                send_message(sock, service, datos)
-                respuesta = receive_response(sock)
-                print("Respuesta: ", respuesta)
-            
-            """ 
-            datos = {
-                "asignar": {
-                    "usuario": "nico",
-                    "hora_inicio": "8",
-                    "hora_fin": "18",
-                    "dia": "Lunes"
-                }
-            }
-
-            #   Enviamos el mensaje mediante el socket al servicio
-            send_message(sock, service, datos)
-
-            #   Recibimos la respuesta desde el socket
-            respuesta = receive_response(sock)
-            print("Respuesta: ", respuesta)
-            """
         except ConnectionRefusedError:
             print(f'No se pudo conectar al bus.')
         except KeyboardInterrupt:

@@ -7,7 +7,7 @@ tabla asignacion
 """
 import json
 from time import sleep
-from service import main_service, decode_response, incode_response, process_db_request
+from service import main_service, decode_response, incode_response, process_db_request, get_bloque_ids, get_user_id
 
 
 def asignar(sock, service, msg):
@@ -15,42 +15,51 @@ def asignar(sock, service, msg):
     @   Función para asignar bloques de horario a usuarios
     *   Ejemplo:    "asignar" : { "usuario": "hola", "hora_inicio": "8", "hora_fin": "16", "dia": "lunes" }
     """
-    fields: dict = msg['asignar']
+    fields = msg['asignar']
     if 'usuario' and 'hora_inicio' and 'hora_fin' and 'dia' not in fields:
         return incode_response(service, {
             "data": "Incomplete user fields."
         })
-    # query para extraer id de usuario
-    db_sql = {
-        "sql": "SELECT id FROM usuario WHERE nombre = :usuario",
-        "params": {
-            "usuario": fields['usuario'],
-        }
-    }
-    db_userrequest = process_db_request(sock, db_sql)
-    print("db user request: ",db_userrequest.get('data')[0].get('id'))
-    #query para extraer id de bloque
-    db_sql = {
-        "sql": "SELECT id FROM bloque WHERE hora_inicio = :hora_inicio AND hora_fin = :hora_fin AND dia = :dia",
-        "params": {
-            "hora_inicio": fields['hora_inicio'],
-            "hora_fin": fields['hora_fin'],
-            "dia": fields['dia'],
-        }
-    }
-    db_blockrequest = process_db_request(sock, db_sql)
-    print("db block request: ",db_blockrequest)
+    
+    # extraer id de usuario
+    userId = get_user_id(sock, fields['usuario'])
+    print("userId: ",userId)
+    if userId is None:
+        return incode_response(service, {
+            "data": "No existe el usuario."
+        })
+    userId2 = userId[0]['id']
+    print("userId2: ",userId2)
+    # extraer id de bloque
+    blockId = get_bloque_ids(sock, fields['hora_inicio'], fields['hora_fin'], fields['dia'])
+    print("blockId1: ",blockId)
+    if blockId is None:
+        return incode_response(service, {
+            "data": "No existe el bloque."
+        })
+    blockId = blockId[0]['id']
+    print("blockId2: ",blockId)
+    # extraer id de asignacion
     #query para insertar en asignacion
     db_sql = {
-        "sql": "INSERT INTO asignacion (id_usuario, id_bloque) VALUES ("
+        "sql": "INSERT INTO asignacion (id_usuario, id_bloque) VALUES (" 
                ":id_usuario, :id_bloque)",
         "params": {
-            "id_usuario": db_userrequest['data'][0]['id'],
-            "id_bloque": db_blockrequest['data'][0]['id']
+            "id_usuario": userId,
+            "id_bloque": blockId
         }
     }
     db_request = process_db_request(sock, db_sql)
-    return incode_response(service, db_request)
+    if 'affected_rows' in db_request:
+        return incode_response(service, {
+            "data": f"se insertaron {db_request['affected_rows']} filas."
+        })
+    else:
+        return incode_response(service, {
+            "data": db_request
+        })
+    
+
 
 def process_request(sock, data):
     """
