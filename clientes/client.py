@@ -77,6 +77,28 @@ def input_field(text_input, max_length):
     return field.lower()
 
 
+def valid_id_field(data_list, input_id: str):
+    if not input_id.isdigit():
+        return False
+
+    id_list = []
+    for row in data_list:
+        id_list.append(int(row['id']))
+
+    if int(input_id) not in id_list:
+        return False
+
+    return True
+
+
+def input_id_field(text_input, data_list):
+    input_id = input(text_input)
+    while not valid_id_field(data_list, input_id):
+        print(f"Error: El ID ingresado no es correcto.")
+        input_id = input(text_input)
+    return input_id.lower()
+
+
 def service_request(sock, service, datos):
     #   Enviamos el mensaje mediante el socket al servicio
     send_message(sock, service, datos)

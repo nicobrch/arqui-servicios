@@ -1,21 +1,5 @@
 import socket
-
-
-def print_select(status, data):
-    if status == 'OK':
-        if isinstance(data, list):
-            print_table(data)
-        else:
-            print(data)
-    else:
-        print(f"Ocurrió un error: {data}")
-
-
-def print_rud(status, data):
-    if status == 'OK':
-        print(data)
-    else:
-        print(f"Ocurrió un error: {data}")
+from client import input_field, service_request, print_select, print_ins_del_upd
 
 
 def crear_usuario(sock, service):
@@ -37,7 +21,7 @@ def crear_usuario(sock, service):
     }
     #   Enviamos los datos al servicio
     status, data = service_request(sock, service, datos)
-    print_rud(status, data)
+    print_ins_del_upd(status, data)
 
 
 def leer_usuario(sock, service):
@@ -110,7 +94,7 @@ def actualizar_usuario(sock, service):
             }
         }
         status, data = service_request(sock, service, datos)
-        print_rud(status, data)
+        print_ins_del_upd(status, data)
     elif opcion == '2':
         cargo = input_field("Ingrese nuevo cargo: ", max_length=20)
         datos = {
@@ -120,7 +104,7 @@ def actualizar_usuario(sock, service):
             }
         }
         status, data = service_request(sock, service, datos)
-        print_rud(status, data)
+        print_ins_del_upd(status, data)
     elif opcion == '3':
         tipo = input_field("Ingrese nuevo tipo: ", max_length=10)
         datos = {
@@ -130,7 +114,7 @@ def actualizar_usuario(sock, service):
             }
         }
         status, data = service_request(sock, service, datos)
-        print_rud(status, data)
+        print_ins_del_upd(status, data)
     elif opcion == '4':
         password = input_field("Ingrese nueva password: ", max_length=50)
         datos = {
@@ -140,7 +124,7 @@ def actualizar_usuario(sock, service):
             }
         }
         status, data = service_request(sock, service, datos)
-        print_rud(status, data)
+        print_ins_del_upd(status, data)
     else:
         print("No existe esa opción.")
 
@@ -154,7 +138,7 @@ def borrar_usuario(sock, service):
     }
     #   Enviamos los datos al servicio
     status, data = service_request(sock, service, datos)
-    print_rud(status, data)
+    print_ins_del_upd(status, data)
 
 
 def main_client():
@@ -209,6 +193,4 @@ def main_client():
 
 
 if __name__ == "__main__":
-    from client import input_field, service_request, print_table
-
     main_client()
