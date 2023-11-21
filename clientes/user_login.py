@@ -1,6 +1,6 @@
 import socket
 import json
-
+import sys
 
 def main_client():
     """
@@ -32,6 +32,8 @@ def main_client():
                         print("Credenciales inválidas, intente nuevamente.")
                     else:
                         print(f"Inicio de sesión exitoso.")
+                        sock.close()
+                        sys.exit()
                 else:
                     print(f"Ocurrió un error: {data}")
 
