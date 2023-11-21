@@ -53,7 +53,7 @@ def read(sock, service, msg):
     if msg['leer'] == 'all':
         #   Opción de leer todos los usuarios
         db_sql = {
-            "sql": "SELECT usuario, nombre, cargo, tipo FROM usuario"
+            "sql": "SELECT id, usuario, nombre, cargo, tipo FROM usuario"
         }
         db_request = process_db_request(sock, db_sql)
         if len(db_request) == 0:
@@ -69,7 +69,7 @@ def read(sock, service, msg):
         if 'usuario' in msg:
             #   Leer usuario según campo "usuario".
             db_sql = {
-                "sql": "SELECT usuario, nombre, cargo, tipo FROM usuario WHERE usuario = :usuario",
+                "sql": "SELECT id, usuario, nombre, cargo, tipo FROM usuario WHERE usuario = :usuario",
                 "params": {
                     "usuario": msg['usuario']
                 }
@@ -86,7 +86,7 @@ def read(sock, service, msg):
         elif 'nombre' in msg:
             #   Leer usuario según campo "nombre".
             db_sql = {
-                "sql": "SELECT usuario, nombre, cargo, tipo FROM usuario WHERE nombre = :nombre",
+                "sql": "SELECT id, usuario, nombre, cargo, tipo FROM usuario WHERE nombre = :nombre",
                 "params": {
                     "nombre": msg['nombre']
                 }
@@ -103,7 +103,7 @@ def read(sock, service, msg):
         elif 'cargo' in msg:
             #   Leer usuario según campo "cargo".
             db_sql = {
-                "sql": "SELECT usuario, nombre, cargo, tipo FROM usuario WHERE cargo = :cargo",
+                "sql": "SELECT id, usuario, nombre, cargo, tipo FROM usuario WHERE cargo = :cargo",
                 "params": {
                     "cargo": msg['cargo']
                 }
@@ -120,7 +120,7 @@ def read(sock, service, msg):
         elif 'tipo' in msg:
             #   Leer usuario según campo "tipo".
             db_sql = {
-                "sql": "SELECT usuario, nombre, cargo, tipo FROM usuario WHERE tipo = :tipo",
+                "sql": "SELECT id, usuario, nombre, cargo, tipo FROM usuario WHERE tipo = :tipo",
                 "params": {
                     "tipo": msg['tipo']
                 }
