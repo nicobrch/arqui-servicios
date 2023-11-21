@@ -1,11 +1,15 @@
+import os
 import socket
 import sys
 import json
+from dotenv import load_dotenv
 
 """
 @   Archivo principal de servicio
 *   Todos los servicios que se creen deberán importar las funciones necesarias de este archivo.
 """
+
+load_dotenv()
 
 
 def send_message(sock, message):
@@ -247,7 +251,7 @@ def main_service(service, process_request):
     *   Cuando llega una transaccion, es procesada por la función 'process_request' de cada servicio.
     *   El resultado del procesamiento lo decodificamos para posteriormente codificarlo y enviarlo.
     """
-    server_address = ('soabus', 5000)
+    server_address = (f"{os.getenv('SOABUS_HOST')}", 5000)
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:

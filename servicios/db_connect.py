@@ -21,7 +21,7 @@ def connect():
     @   Función para crear una sesión
     *   Se conecta a la BDD usando SQLAlchemy. La BDD debe estar corriendo en el docker compose.
     """
-    db_url = f"postgresql://postgres:postgres@postgres:5432/arquisw"
+    db_url = f"postgresql://postgres:postgres@{os.getenv('POSTGRES_HOST')}:5432/{os.getenv('POSTGRES_DB')}"
     Base = declarative_base()
     engine = create_engine(db_url)
     Base.metadata.create_all(engine)
