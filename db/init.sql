@@ -2,7 +2,7 @@ CREATE TABLE usuario (
     id serial PRIMARY KEY,
     usuario char(20) UNIQUE NOT NULL,
     nombre char(20) NOT NULL,
-    cargo char(20),
+    cargo char(20) NOT NULL,
     tipo char(10) NOT NULL,
     password char(72) NOT NULL,
     created_at date DEFAULT current_date NOT NULL,

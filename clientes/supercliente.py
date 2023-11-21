@@ -18,7 +18,7 @@ def print_menu2():
 
 def execute_file(file_path):
     try:
-        os.system(f"python {file_path}")
+        os.system(f"python3 {file_path}")
     except Exception as e:
         print(f"Error al ejecutar el archivo {file_path}: {e}")
 

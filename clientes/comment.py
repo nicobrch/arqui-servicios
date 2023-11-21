@@ -1,5 +1,5 @@
 import socket
-from client import input_field, service_request, print_select, print_ins_del_upd, get_session, auth_session
+from client import input_field, service_request, print_select, print_ins_del_upd, get_session, auth_session, input_id_field
 
 session = get_session()
 
@@ -44,7 +44,7 @@ def crear_comentario_admin(sock, service):
 
             print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
             print_select(status, assign_data)
-            id_asignacion = input()
+            id_asignacion = input_id_field("Ingrese ID de asignacion: ", assign_data)
             texto = input_field("Ingrese comentario: ", max_length=100)
 
             #   Crear comentario
@@ -72,7 +72,7 @@ def crear_comentario_admin(sock, service):
 
             print("=== SELECCIONE UN ID DE BLOQUE ===")
             print_select(status, block_data)
-            id_bloque = input()
+            id_bloque = input_id_field("Ingrese ID de asignacion: ", block_data)
 
             #   Buscar asignaciones correspondientes al bloque
             datos = {
@@ -88,7 +88,7 @@ def crear_comentario_admin(sock, service):
 
             print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
             print_select(status, assign_data)
-            id_asignacion = input()
+            id_asignacion = input_id_field("Ingrese ID de asignacion: ", assign_data)
             texto = input_field("Ingrese comentario: ", max_length=100)
 
             datos = {
@@ -120,7 +120,7 @@ def crear_comentario_personal(sock, service):
     #   Dejamos que el usuario seleccione una asignacion por su id
     print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
     print_select(status, assign_data)
-    id_asignacion = input()
+    id_asignacion = input_id_field("Ingrese ID de asignacion: ", assign_data)
     texto = input_field("Ingrese comentario: ", max_length=100)
 
     #   Leer comentarios según ID de asignación
@@ -152,7 +152,7 @@ def leer_comentarios_admin(sock, service):
     #   Dejamos que el usuario seleccione una asignacion por su id
     print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
     print_select(status, assign_data)
-    id_asignacion = input()
+    id_asignacion = input_id_field("Ingrese ID de asignacion: ", assign_data)
 
     #   Leer comentarios según ID de asignación
     datos = {
@@ -180,7 +180,7 @@ def leer_comentarios_personal(sock, service):
     #   Dejamos que el usuario seleccione una asignacion por su id
     print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
     print_select(status, assign_data)
-    id_asignacion = input()
+    id_asignacion = input_id_field("Ingrese ID de asignacion: ", assign_data)
 
     #   Leer comentarios según ID de asignación
     datos = {
