@@ -15,6 +15,8 @@ def execute_file(file_name):
         print(f"Error al ejecutar el archivo {file_name}: {e}")
 
 if __name__ == "__main__":
+    execute_file("user_login.py")
+
     while True:
         print_menu()
         choice = input("Ingrese el número del archivo que desea ejecutar (0 para salir): ")
