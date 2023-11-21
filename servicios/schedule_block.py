@@ -3,28 +3,6 @@ import json
 from time import sleep
 from service import main_service, decode_response, incode_response,process_db_request
 
-def leer(sock, service, msg):
-    """
-    @   Función para leer un o algunos bloques de horario
-    *   Si el campo 'leer' es 'all', lee todos los bloques de horario sin filtros.
-    *   Si el campo 'leer' es 'some', lee los bloques de horario de acuerdo su id, hora_inicio, hora_fin o dia.
-    """
-    fields: dict = msg['leer']
-    if 'id' not in fields:
-        db_sql = {
-            "sql": "SELECT * FROM bloque"
-        }
-        #   Opción de leer usuarios, habrá que verificar si se desea leer un usuario o muchos
-    else:
-        db_sql = {
-            "sql": "SELECT id FROM bloque WHERE id = :id",
-            "params": {
-                "id": fields['id'],
-            }
-        }
-    db_request = process_db_request(sock, db_sql)
-    return incode_response(service, db_request)
-
 def crear(sock, service, msg):
     """
     @   Función para crear un bloque de horarios
@@ -44,6 +22,110 @@ def crear(sock, service, msg):
             "dia": fields['dia'],
         }
     }
+    db_request = process_db_request(sock, db_sql)
+    if 'affected_rows' in db_request:
+        return incode_response(service, {
+            "data": f"se insertaron {db_request['affected_rows']} filas."
+        })
+    else:
+        return incode_response(service, {
+            "data": db_request
+        })
+
+def leer(sock, service, msg):
+    """
+    @   Función para leer un o algunos bloques de horario
+    *   Si el campo 'leer' es 'all', lee todos los bloques de horario sin filtros.
+    *   Si el campo 'leer' es 'some', lee los bloques de horario de acuerdo su id, hora_inicio, hora_fin o dia.
+    """
+    if msg['leer'] == 'all':
+        db_sql = {
+            "sql": "SELECT * FROM bloque"
+        }
+        db_request = process_db_request(sock, db_sql)
+        if len(db_request) == 0:
+            return incode_response(service, {
+                "data": "No hay bloques de horario."
+            })
+        else:
+            return incode_response(service, {
+                "data": db_request
+            })
+    elif msg['leer'] == 'some':
+        #   Opción de leer usuarios, habrá que verificar si se desea leer un usuario o muchos
+        if 'id' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM bloque WHERE id = :id",
+                "params": {
+                    "id": msg['id'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'hora_inicio' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM bloque WHERE hora_inicio = :hora_inicio",
+                "params": {
+                    "hora_inicio": msg['hora_inicio'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'hora_fin' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM bloque WHERE hora_fin = :hora_fin",
+                "params": {
+                    "hora_fin": msg['hora_fin'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'dia' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM bloque WHERE dia = :dia",
+                "params": {
+                    "dia": msg['dia'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        else:
+            return incode_response(service, {
+                "data": "No hay bloques de horario."
+            })
+    else:
+        return incode_response(service, {
+            "data": "Query SQL Incompleta. Por favor revisar los campos solicitados."
+        })
+
 
 def modificar(sock, service, msg):
     """
@@ -51,21 +133,66 @@ def modificar(sock, service, msg):
     *   Ejemplo:    "modificar" : { "usuario": "hola", "nombre": "hola", "cargo": "hola" }
     """
     fields: dict = msg['modificar']
-    if 'id' and 'hora_inicio' and 'hora_fin' and 'dia' not in fields:
+    if 'id' not in fields:
         return incode_response(service, {
             "data": "Incomplete user fields."
         })
-    db_sql = {
-        "sql": "UPDATE bloque SET hora_inicio = :hora_inicio, hora_fin = :hora_fin, dia = :dia WHERE id = :id",
-        "params": {
-            "id": fields['id'],
-            "hora_inicio": fields['hora_inicio'],
-            "hora_fin": fields['hora_fin'],
-            "dia": fields['dia'],
+    if 'hora_inicio' in fields:
+        db_sql = {
+            "sql": "UPDATE bloque SET hora_inicio = :hora_inicio WHERE id = :id",
+            "params": {
+                "id": fields['id'],
+                "hora_inicio": fields['hora_inicio'],
+            }
         }
-    }
-    db_request = process_db_request(sock, db_sql)
-    return incode_response(service, db_request)
+        db_request = process_db_request(sock, db_sql)
+        if 'affected_rows' in db_request:
+            return incode_response(service, {
+                "data": f"se actualizaron {db_request['affected_rows']} filas."
+            })
+        else:
+            return incode_response(service, {
+                "data": db_request
+            })
+    elif 'hora_fin' in fields:
+        db_sql = {
+            "sql": "UPDATE bloque SET hora_fin = :hora_fin WHERE id = :id",
+            "params": {
+                "id": fields['id'],
+                "hora_fin": fields['hora_fin'],
+            }
+        }
+        db_request = process_db_request(sock, db_sql)
+        if 'affected_rows' in db_request:
+            return incode_response(service, {
+                "data": f"se actualizaron {db_request['affected_rows']} filas."
+            })
+        else:
+            return incode_response(service, {
+                "data": db_request
+            })
+    elif 'dia' in fields:
+        db_sql = {
+            "sql": "UPDATE bloque SET dia = :dia WHERE id = :id",
+            "params": {
+                "id": fields['id'],
+                "dia": fields['dia'],
+            }
+        }
+        db_request = process_db_request(sock, db_sql)
+        if 'affected_rows' in db_request:
+            return incode_response(service, {
+                "data": f"se actualizaron {db_request['affected_rows']} filas."
+            })
+        else:
+            return incode_response(service, {
+                "data": db_request
+            })
+    else:
+        return incode_response(service, {
+            "data": "Query SQL Incompleta. Por favor revisar los campos solicitados."
+        })
+
 
 def eliminar(sock, service, msg):
     """
@@ -79,19 +206,21 @@ def eliminar(sock, service, msg):
     Returns:
         The response from the database operation.
     """
-    fields: dict = msg['eliminar']
-    if 'id' not in fields:
-        return incode_response(service, {
-            "data": "Incomplete user fields."
-        })
     db_sql = {
         "sql": "DELETE FROM bloque WHERE id = :id",
         "params": {
-            "id": fields['id'],
+            "id": msg['borrar'],
         }
     }
     db_request = process_db_request(sock, db_sql)
-    return incode_response(service, db_request)
+    if 'affected_rows' in db_request:
+        return incode_response(service, {
+            "data": f"se eliminaron {db_request['affected_rows']} filas."
+        })
+    else:
+        return incode_response(service, {
+            "data": db_request
+        })
 
 def process_request(sock, data):
     """
@@ -115,7 +244,7 @@ def process_request(sock, data):
             return crear(sock=sock, service=service, msg=msg)
         elif 'modificar' in msg:
             return modificar(sock, service, msg)
-        elif 'eliminar' in msg:
+        elif 'borrar' in msg:
             return eliminar(sock, service, msg)
         else:
             return incode_response(service, {
@@ -137,7 +266,6 @@ def main(sock, data):
         print("Exception: ", e)
         sleep(20)
         main(sock, data)
-
 
 
 if __name__ == "__main__":
