@@ -1,7 +1,7 @@
 {
   "id": "1",
   "usuario": "jonas",
-  "cargo": "Medico",
+  "cargo": "Tecnico",
   "tipo": "admin",
   "autenticado": "true"
 }

@@ -74,7 +74,7 @@ def input_field(text_input, max_length):
     while not valid_fields(field, max_length):
         print(f"Error: Los datos no son correctos. Intente un largo máximo de {max_length} carácteres alfanuméricos.")
         field = input(text_input)
-    return field
+    return field.lower()
 
 
 def service_request(sock, service, datos):
@@ -104,3 +104,19 @@ def print_table(data):
         table.append([item[key] for key in headers])
 
     print(tabulate(table, headers=headers, tablefmt='grid'))
+
+def print_select(status, data):
+    if status == 'OK':
+        if isinstance(data, list):
+            print_table(data)
+        else:
+            print(data)
+    else:
+        print(f"Ocurrió un error: {data}")
+
+
+def print_ins_del_upd(status, data):
+    if status == 'OK':
+        print(data)
+    else:
+        print(f"Ocurrió un error: {data}")

@@ -11,26 +11,6 @@ from service import (main_service, decode_response, incode_response, process_db_
 """
 
 
-def get_user_id(sock, service, msg):
-    if 'user_id' not in msg:
-        return incode_response(service, {
-            "data": "Incomplete user fields."
-        })
-    user_request = {
-        "leer": "some",
-        "usuario": msg['user_id']
-    }
-    user_data = user_id_request(sock, user_request)
-    if len(user_data) == 0:
-        return incode_response(service, {
-            "data": "No existen usuarios para la búsqueda solicitada."
-        })
-    else:
-        return incode_response(service, {
-            "data": user_data
-        })
-
-
 def create(sock, service, msg):
     """
     @   Función para insertar un comentario a la tabla de comentarios
@@ -317,7 +297,7 @@ def main(sock, data):
         return process_request(sock=sock, data=data)
     except Exception as e:
         print("Exception: ", e)
-        sleep(20)
+        sleep(5)
         main(sock, data)
 
 
