@@ -15,16 +15,16 @@ def leer(sock, service, msg):
     *   Si el campo 'leer' es 'some', lee los bloques de horario de acuerdo su id, hora_inicio, hora_fin o dia.
     """
     fields: dict = msg['leer']
-    if 'id' not in fields:
+    if 'asignacion_id' not in fields:
         db_sql = {
-            "sql": "SELECT * FROM bloque"
+            "sql": "SELECT * FROM comentarios"
         }
         #   Opción de leer usuarios, habrá que verificar si se desea leer un usuario o muchos
     else:
         db_sql = {
-            "sql": "SELECT id FROM bloque WHERE id = :id",
+            "sql": "SELECT asignacion_id FROM comentarios WHERE asignacion_id = :asignacion_id",
             "params": {
-                "id": fields['id'],
+                "asignacion_id": fields['asignacion_id'],
             }
         }
     db_request = process_db_request(sock, db_sql)
@@ -61,16 +61,16 @@ def modificar(sock, service, msg):
     *   Ejemplo:    "modificar" : { "usuario": "hola", "nombre": "hola", "cargo": "hola" }
     """
     fields: dict = msg['modificar']
-    if 'id' and 'hora_inicio' and 'hora_fin' and 'dia' not in fields:
+    if 'asignacion_id' and 'usuario_id' and 'texto' not in fields:
         return incode_response(service, {
             "data": "Incomplete user fields."
         })
     db_sql = {
-        "sql": "UPDATE bloque SET hora_inicio = :hora_inicio, hora_fin = :hora_fin, dia = :dia WHERE id = :id",
+        "sql": "UPDATE comentarios SET usuario_id = :usuario_id, texto = :texto WHERE asignacion_id = :asignacion_id",
         "params": {
-            "id": fields['id'],
-            "hora_inicio": fields['hora_inicio'],
-            "hora_fin": fields['hora_fin'],
+            "asignacion_id": fields['asignacion_id'],
+            "usuario_id": fields['usuario_id'],
+            "texto": fields['texto'],
             "dia": fields['dia'],
         }
     }
@@ -90,14 +90,14 @@ def eliminar(sock, service, msg):
         The response from the database operation.
     """
     fields: dict = msg['eliminar']
-    if 'id' not in fields:
+    if 'asignacion_id' not in fields:
         return incode_response(service, {
             "data": "Incomplete user fields."
         })
     db_sql = {
-        "sql": "DELETE FROM bloque WHERE id = :id",
+        "sql": "DELETE FROM comentarios WHERE asignacion_id = :asignacion_id",
         "params": {
-            "id": fields['id'],
+            "asignacion_id": fields['asignacion_id'],
         }
     }
     db_request = process_db_request(sock, db_sql)
