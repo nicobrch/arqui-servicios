@@ -182,6 +182,44 @@ def block_id_request(sock, datos):
         }
 
 
+def get_user_id(sock, usuario):
+    """
+    @   Obtener ID de Usuario
+    *   Esta función retorna el ID del usuario como STR, sino retorna None.
+    """
+    db_sql = {
+        "sql": "SELECT id FROM usuario WHERE usuario = :usuario",
+        "params": {
+            "usuario": usuario,
+        }
+    }
+    db_request: list = process_db_request(sock, db_sql)
+    if len(db_request) == 0:
+        return None
+    else:
+        return db_request[0]['id']
+
+def get_bloque_ids(sock, hora_inicio, hora_fin, dia):
+    """
+    @   Obtener IDS de Bloques
+    *   Esta función busca bloques por hora_inicio, hora_fin, dia
+    *   Dado que no hay campos únicos, retorna una lista JSON con la llave "id" o None.
+    """
+    db_sql = {
+        "sql": "SELECT id FROM bloque WHERE hora_inicio = :hora_inicio AND hora_fin = :hora_fin AND dia= :dia",
+        "params": {
+            "hora_inicio": hora_inicio,
+            "hora_fin": hora_fin,
+            "dia": dia
+        }
+    }
+    db_request: list = process_db_request(sock, db_sql)
+    if len(db_request) == 0:
+        return None
+    else:
+        return db_request
+
+
 def main_service(service, process_request):
     """
     @   Servicio principal

@@ -46,9 +46,9 @@ VALUES
 
 INSERT INTO bloque (hora_inicio, hora_fin, dia)
 VALUES
-(9, 12, 'Lunes'),
-(14, 17, 'Martes'),
-(10, 13, 'Miércoles');
+(9, 12, 'lunes'),
+(14, 17, 'martes'),
+(10, 13, 'miercoles');
 
 INSERT INTO asignacion (usuario_id, bloque_id)
 VALUES

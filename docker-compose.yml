@@ -73,3 +73,34 @@ services:
       - bus
     environment:
       - SOABUS_HOST=soabus
+
+  block-service:
+    container_name: block-service
+    restart: always
+    build:
+      context: ./servicios
+      dockerfile: Dockerfile
+    command: sh -c "sleep 6 && python -u schedule_block.py"
+    volumes:
+      - ./servicios:/app/
+    depends_on:
+      - postgres
+      - bus
+    environment:
+      - SOABUS_HOST=soabus
+
+  asign-service:
+    container_name: asign-service
+    restart: always
+    build:
+      context: ./servicios
+      dockerfile: Dockerfile
+    command: sh -c "sleep 6 && python -u asign_block.py"
+    volumes:
+      - ./servicios:/app/
+    depends_on:
+      - postgres
+      - bus
+    environment:
+      - SOABUS_HOST=soabus
+
