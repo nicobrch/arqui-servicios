@@ -103,6 +103,8 @@ def auth_session(session: dict, tipo):
     elif 'tipo' not in session or session['tipo'] != tipo:
         print('No tiene permisos para realizar esta operación.')
         return False
+    elif 'autenticado' not in session or session['autenticado'] != 'true':
+        return False
     return True
 
 
