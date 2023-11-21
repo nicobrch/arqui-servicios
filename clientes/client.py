@@ -1,5 +1,6 @@
 import json
 import socket
+from tabulate import tabulate
 
 """
 @   Archivo principal de cliente
@@ -82,3 +83,13 @@ def service_request(sock, service, datos):
     #   Recibimos la respuesta desde el socket
     respuesta = receive_response(sock)
     return respuesta['status'], respuesta['data']
+
+
+def print_table(data):
+    headers = data[0].keys()  # Assuming all dictionaries have the same keys
+    table = []
+
+    for item in data:
+        table.append([item[key] for key in headers])
+
+    print(tabulate(table, headers=headers, tablefmt='grid'))

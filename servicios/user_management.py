@@ -146,10 +146,10 @@ def update(sock, service, msg):
     @   Función para actualizar un usuario.
     *   Recibe un diccionario en la llave 'update' de msg, que debe incluir el usuario a actualizar y el campo.
     *   Los campos que se pueden actualizar son nombre, cargo, tipo o password.
-    *   Ejemplo:    "update": { "usuario": "hola", "password": "123" }
+    *   Ejemplo:    "actualizar": { "usuario": "hola", "password": "123" }
     """
     #   Opción de actualizar usuarios
-    fields: dict = msg['update']
+    fields: dict = msg['actualizar']
     if 'usuario' not in fields:
         return incode_response(service, {
             "data": "No user provided."
@@ -172,7 +172,7 @@ def update(sock, service, msg):
             return incode_response(service, {
                 "data": db_request
             })
-    elif 'cargo' in msg:
+    elif 'cargo' in fields:
         #   Actualizar cargo de usuario.
         db_sql = {
             "sql": "UPDATE usuario SET cargo = :cargo WHERE usuario = :usuario",
@@ -190,7 +190,7 @@ def update(sock, service, msg):
             return incode_response(service, {
                 "data": db_request
             })
-    elif 'tipo' in msg:
+    elif 'tipo' in fields:
         #   Actualizar tipo de usuario.
         db_sql = {
             "sql": "UPDATE usuario SET tipo = :tipo WHERE usuario = :usuario",
@@ -208,7 +208,7 @@ def update(sock, service, msg):
             return incode_response(service, {
                 "data": db_request
             })
-    elif 'password' in msg:
+    elif 'password' in fields:
         #   Actualizar password de usuario.
         db_sql = {
             "sql": "UPDATE usuario SET password = :password WHERE usuario = :usuario",
