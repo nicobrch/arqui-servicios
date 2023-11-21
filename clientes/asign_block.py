@@ -19,29 +19,6 @@ def print_rud(status, data):
     else:
         print(f"Ocurrió un error: {data}")
 
-def leer_asignacion_admin(sock, service):
-    print("[ - Leer asignaciones - ]")
-    datos = {
-        "leer": "all"
-    }
-    # obtenemos todas las asignaciones
-    status, assign_data = service_request(sock, 'asign', datos)
-    if len(assign_data) == 0:
-        print("No existen asignaciones en este momento.")
-        return
-    # dejamos que el usuario seleccione una asignacion por su id
-    print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
-    print_select(status, assign_data)
-    id_asignacion = input()
-    # leer asignacion segun id
-    datos = {
-        "leer": "some",
-        "id": id_asignacion
-    }
-    # enviamos los datos al servicio
-    status, comment_data = service_request(sock, service, datos)
-    print_select(status, comment_data)
-
 
 def leer_asignaciones_personal(sock, service):
     print("[ - Leer asignacion por personal - ]")
@@ -49,45 +26,15 @@ def leer_asignaciones_personal(sock, service):
         "leer": "some",
         "usuario_id": session['id']
     }
+    status, data = service_request(sock, service, datos)
+    print_select(status, data)
     #   Obtenemos todas las asignaciones
-    status, assign_data = service_request(sock, 'asign', datos)
-    if len(assign_data) == 0:
+    if len(data) == 0:
         print("No existen asignaciones en este momento para ti.")
         return
-    #   Dejamos que el usuario seleccione una asignacion por su id
-    print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
-    print_select(status, assign_data)
-    id_asignacion = input()
-    #  leer asignaciones por bloque
-    
+    #   Dejamos que el usuario seleccione una asignacion por su i
+    print_select(status, data)
 
-
-
-
-    datos = {
-        "leer": "some",
-        "usuario_id": session['id']
-    }
-
-    status, assign_data = service_request(sock, 'asign', datos)
-
-    if len(assign_data) == 0:
-        print("No existen asignaciones en este momento para ti.")
-        return
-
-    #   Dejamos que el usuario seleccione una asignacion por su id
-    print("=== SELECCIONE UNA ID DE bloque ===")
-    print_select(status, assign_data)
-    bloque_id = input()
-
-    #   Leer comentarios según ID de bloque
-    datos = {
-        "leer": "some",
-        "bloque_id": bloque_id
-    }
-    #   Enviamos los datos al servicio
-    status, comment_data = service_request(sock, service, datos)
-    print_ins_del_upd(status, comment_data)
 
 
 def asignar_horario(sock, service):
