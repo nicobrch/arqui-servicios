@@ -107,17 +107,45 @@ def process_db_request(sock, sql):
         decode_db_data = decode_response(format_db_data)
         #   Retornamos los datos codificados
         if isinstance(decode_db_data['data'], str):
-            print("sexito4",decode_db_data['data'])
             return decode_db_data['data']
         if isinstance(decode_db_data['data'], dict):
-            print("sexito5",decode_db_data['data'])
             return decode_db_data['data']
         else:
-            print("sexito6",decode_db_data['data'])
             return decode_db_data['data']['data']
     except Exception as err:
         return {
             "data": "Database Error: " + str(err)
+        }
+
+
+def user_id_request(sock, datos):
+    """
+    @   Conexión al servicio de Usuario
+    *   Esta función recibe un JSON { "leer": "some", "usuario": "hola" }
+    *   Retorna un 'ID' de usuario como STRING.
+    """
+    try:
+        #   Hacemos el request al servicio 'dbcon' igual que con cualquier otro servicio
+        usr_request = incode_response('usrmn', datos)
+        print(f'Requesting data from User Service: {usr_request}')
+        send_message(sock, usr_request)
+        print(f'Waiting for response...')
+        expected_length = int(receive_message(sock, 5).decode('utf-8'))
+        received_data = receive_message(sock, expected_length)
+        print(f'Received data: {received_data}')
+
+        #   Los datos se encuentran en bytes, es necesario codificar los datos
+        request_data = json.loads(received_data[7:])
+        format_request_data = incode_response('usrmn', request_data)
+        decode_request_data = decode_response(format_request_data)
+        #   Retornamos los datos codificados
+        if isinstance(decode_request_data['data'], str):
+            return decode_request_data['data']['data']
+        else:
+            return decode_request_data['data']['data']['data']
+    except Exception as err:
+        return {
+            "data": "User Management Service Error: " + str(err)
         }
 
 
@@ -144,6 +172,7 @@ def get_asignacion_ids(sock, usuario_id, bloque_id):
     @   Obtener IDS de Asignaciones
     *   Esta función busca las asginaciones de acuerdo al usuario_id y al bloque_id
     *   Dado que no hay campos únicos, retorna una lista JSON con la llave "id" o None.
+    *   Lista = [ {"id": "1"}, {"id": "2"} ]
     """
     db_sql = {
         "sql": "SELECT id FROM asignacion WHERE usuario_id = :usuario_id AND bloque_id = :bloque_id",
