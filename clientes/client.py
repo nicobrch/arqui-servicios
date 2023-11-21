@@ -96,6 +96,16 @@ def get_session():
     return data
 
 
+def auth_session(session: dict, tipo):
+    if 'id' not in session:
+        print('Usuario no autenticado. Por favor inicie sesión.')
+        return False
+    elif 'tipo' not in session or session['tipo'] != tipo:
+        print('No tiene permisos para realizar esta operación.')
+        return False
+    return True
+
+
 def print_table(data):
     headers = data[0].keys()  # Assuming all dictionaries have the same keys
     table = []
