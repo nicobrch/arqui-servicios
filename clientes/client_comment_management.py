@@ -3,8 +3,12 @@ from client import send_message, receive_response
 
 
 def menu():
-    print("{ -- Servicio de Manejo de Usuarios -- }")
+    print("{ -- Servicio de Manejo de Comentarios -- }")
     print("[1] Crear comentario.")
+    print("[2] Eliminar comentario.")
+    print("[3] Modificar comentario.")
+    print("[4] Consultar comentario.")
+    print("[0] Salir.")
 
 
 def main_client():
@@ -41,6 +45,40 @@ def main_client():
                             "texto": texto+""
                         }
                     }
+                elif opcion == '2':
+                    print("[ - Eliminar comentario- ]")
+                    asignacion_id = input("Ingrese un id: ")
+                    #   Definimos la opción que elija como un diccionario
+                    #eliminar
+                    datos = {
+                        "eliminar": {
+                            "asignacion_id": asignacion_id+"",
+                        }
+                    }
+                elif opcion == '3':
+                    print("[ - Modificar Comentario - ]")
+                    asignacion_id = input("Ingrese el Asignacion_ID: ")
+                    usuario_id = input("Ingrese el ID del usuario: ")
+                    texto = input("Ingrese el nuevo contenido: ")
+                    #   Definimos la opción que elija como un diccionario
+                    #modificar
+                    datos = {
+                        "modificar": {
+                            "asignacion_id": asignacion_id+"",
+                            "usuario_id": usuario_id+"",
+                            "texto": texto+""
+                        }
+                    }
+                elif opcion == '4':
+                    print("[ - Consultar comentario - ]")
+                    asignacion_id = input("Ingrese el Asignacion_ID: ")
+                    #   Definimos la opción que elija como un diccionario
+                    #leer
+                    datos = {
+                        "leer": {
+                            "asignacion_id": asignacion_id+"",
+                        }
+                    } 
                 else:
                     print("Opcion no valida")
                     continue
