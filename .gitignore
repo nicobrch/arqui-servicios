@@ -4,3 +4,5 @@
 .env
 .pyc
 __pycache__
+servicios/__pycache__
+clientes/__pycache__

@@ -2,17 +2,14 @@ import os
 
 def print_menu():
     print("Seleccione un archivo para ejecutar:")
-    print("1. asign_block.py")
-    print("2. client_comment_management.py")
-    print("3. client.py")
-    print("4. example.py")
-    print("5. schedule_block.py")
-    print("6. user_login.py")
-    print("7. user_management.py")
+    print("1. Servicio de manejo de asignacion de bloques de horario")
+    print("2. Servicio de manejo de comentarios")
+    print("3. Servicio de manejo de bloques de horarios")
+    print("4. Servicio de Autenticacion y Autorizacion")
+    print("5. Servicio de manejo de usuarios")
 
 def execute_file(file_name):
     try:
-        #Aqui en vez de "python3" tienen que poner la forma en que ustedes ejecutan los archivos .py
         os.system(f"python3 {file_name}")
     except Exception as e:
         print(f"Error al ejecutar el archivo {file_name}: {e}")
@@ -28,13 +25,11 @@ if __name__ == "__main__":
             file_name = [
                 "asign_block.py",
                 "client_comment_management.py",
-                "client.py",
-                "example.py",
                 "schedule_block.py",
                 "user_login.py",
                 "user_management.py"
             ][int(choice) - 1]
-
+# Si es necesario se podria de aqui mismo iniciar el servicio tambien
             execute_file(file_name)
         else:
             print("Opción no válida. Intente de nuevo.")
