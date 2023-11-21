@@ -1,5 +1,6 @@
 import socket
-from client import input_field, service_request, print_select, print_ins_del_upd, get_session, auth_session, input_id_field
+from client import (input_field, service_request, print_select, print_ins_del_upd, get_session, auth_session,
+                    input_id_field)
 
 session = get_session()
 
