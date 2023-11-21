@@ -117,6 +117,7 @@ def print_table(data):
 
     print(tabulate(table, headers=headers, tablefmt='grid'))
 
+
 def print_select(status, data):
     if status == 'OK':
         if isinstance(data, list):

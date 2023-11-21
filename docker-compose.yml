@@ -104,3 +104,17 @@ services:
     environment:
       - SOABUS_HOST=soabus
 
+  comnt-service:
+    container_name: comnt-service
+    restart: always
+    build:
+      context: ./servicios
+      dockerfile: Dockerfile
+    command: sh -c "sleep 6 && python -u comment.py"
+    volumes:
+      - ./servicios:/app/
+    depends_on:
+      - postgres
+      - bus
+    environment:
+      - SOABUS_HOST=soabus

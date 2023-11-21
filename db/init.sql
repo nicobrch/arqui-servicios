@@ -40,9 +40,9 @@ CREATE TABLE comentarios (
 
 INSERT INTO usuario (usuario, nombre, cargo, tipo, password)
 VALUES
-('jonas', 'Jonas', 'Tecnico', 'admin', '123'),
-('nico', 'Nico', 'Admin', 'admin', '456'),
-('diego', 'Diego', 'Medico', 'personal', '789');
+('jonas', 'jonas', 'tecnico', 'admin', '123'),
+('nico', 'nico', 'admin', 'admin', '456'),
+('diego', 'diego', 'medico', 'personal', '789');
 
 INSERT INTO bloque (hora_inicio, hora_fin, dia)
 VALUES
