@@ -30,9 +30,7 @@ def asignar(sock, service, msg):
         })
     # extraer id de bloque
     blockId = get_bloque_ids(sock, fields['hora_inicio'], fields['hora_fin'], fields['dia'])
-    print("blockId0: ",blockId)
     blockId1 = blockId[0]['id']
-    print("blockId: ",blockId1)
     if blockId is None:
         return incode_response(service, {
             "data": "No existe el bloque."
@@ -56,6 +54,9 @@ def asignar(sock, service, msg):
         return incode_response(service, {
             "data": db_request
         })
+
+
+
 
 def leer(sock, service, msg):
     """
