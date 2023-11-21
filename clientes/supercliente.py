@@ -5,8 +5,7 @@ def print_menu():
     print("1. Servicio de manejo de asignacion de bloques de horario")
     print("2. Servicio de manejo de comentarios")
     print("3. Servicio de manejo de bloques de horarios")
-    print("4. Servicio de Autenticacion y Autorizacion")
-    print("5. Servicio de manejo de usuarios")
+    print("4. Servicio de manejo de usuarios")
 
 def execute_file(file_name):
     try:
@@ -28,7 +27,6 @@ if __name__ == "__main__":
                 "asign_block.py",
                 "client_comment_management.py",
                 "schedule_block.py",
-                "user_login.py",
                 "user_management.py"
             ][int(choice) - 1]
 # Si es necesario se podria de aqui mismo iniciar el servicio tambien
