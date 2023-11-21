@@ -27,8 +27,8 @@ def asignar_horario(sock, service):
     datos = {
         "asignar": {
             "usuario": usuario,
-            "hora_inicio": hora_inicio,
-            "hora_fin": hora_fin,
+            "hora_inicio": int(hora_inicio),
+            "hora_fin": int(hora_fin),
             "dia": dia
         }
     }
@@ -36,6 +36,64 @@ def asignar_horario(sock, service):
     status, data = service_request(sock, service, datos)
     print_rud(status, data)
 
+def leer_asignacion(sock, service):
+    print("[ - Leer asignacion - ]")
+    print("[1] Leer todas las asignaciones.")
+    print("[2] Buscar por id.")
+    print("[3] Buscar por usuario.")
+    print("[4] Buscar por hora de inicio.")
+    print("[5] Buscar por hora de termino.")
+    print("[6] Buscar por dia de la semana.")
+    opcion = input()
+
+    if opcion == '1':
+        datos = {
+            "leer": "all"
+        }
+        status, data = service_request(sock, service, datos)
+        print_select(status, data)
+    elif opcion == '2':
+        id = input_field("Ingrese id a buscar: ", max_length=4)
+        datos = {
+            "leer": "some",
+            "id": id
+        }
+        status, data = service_request(sock, service, datos)
+        print_select(status, data)
+    elif opcion == '3':
+        usuario = input_field("Ingrese usuario a buscar: ", max_length=20)
+        datos = {
+            "leer": "some",
+            "usuario": usuario
+        }
+        status, data = service_request(sock, service, datos)
+        print_select(status, data)
+    elif opcion == '4':
+        hora_inicio = input_field("Ingrese hora de inicio a buscar: ", max_length=4)
+        datos = {
+            "leer": "some",
+            "hora_inicio": hora_inicio
+        }
+        status, data = service_request(sock, service, datos)
+        print_select(status, data)
+    elif opcion == '5':
+        hora_fin = input_field("Ingrese hora de termino a buscar: ", max_length=4)
+        datos = {
+            "leer": "some",
+            "hora_fin": hora_fin
+        }
+        status, data = service_request(sock, service, datos)
+        print_select(status, data)
+    elif opcion == '6':
+        dia = input_field("Ingrese dia de la semana a buscar: ", max_length=20)
+        datos = {
+            "leer": "some",
+            "dia": dia
+        }
+        status, data = service_request(sock, service, datos)
+        print_select(status, data)
+    else:
+        print("Opcion no valida")
 
 def main_client():
     """
@@ -56,12 +114,16 @@ def main_client():
                 print("[ - Asignar horario - ]")
                 print("0: Salir")
                 print("1: Asignar horario")
+                print("2: Leer asignacion")
+                
                 opcion = input("Ingrese una opcion: ")
 
                 if opcion == '0':
                     break
                 elif opcion == '1':
                     asignar_horario(sock=sock, service=service)
+                elif opcion == '2':
+                    leer_asignacion(sock=sock, service=service)
                 else:
                     print("Opcion no valida")
         except ConnectionRefusedError:

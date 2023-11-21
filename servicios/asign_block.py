@@ -28,25 +28,23 @@ def asignar(sock, service, msg):
         return incode_response(service, {
             "data": "No existe el usuario."
         })
-    userId2 = userId[0]['id']
-    print("userId2: ",userId2)
     # extraer id de bloque
     blockId = get_bloque_ids(sock, fields['hora_inicio'], fields['hora_fin'], fields['dia'])
-    print("blockId1: ",blockId)
+    print("blockId0: ",blockId)
+    blockId1 = blockId[0]['id']
+    print("blockId: ",blockId1)
     if blockId is None:
         return incode_response(service, {
             "data": "No existe el bloque."
         })
-    blockId = blockId[0]['id']
-    print("blockId2: ",blockId)
-    # extraer id de asignacion
+    #extraer id de asignacion
     #query para insertar en asignacion
     db_sql = {
-        "sql": "INSERT INTO asignacion (id_usuario, id_bloque) VALUES (" 
-               ":id_usuario, :id_bloque)",
+        "sql": "INSERT INTO asignacion (usuario_id, bloque_id) VALUES (" 
+               ":usuario_id, :bloque_id)",
         "params": {
-            "id_usuario": userId,
-            "id_bloque": blockId
+            "usuario_id": userId,
+            "bloque_id": blockId1
         }
     }
     db_request = process_db_request(sock, db_sql)
@@ -58,7 +56,129 @@ def asignar(sock, service, msg):
         return incode_response(service, {
             "data": db_request
         })
-    
+
+def leer(sock, service, msg):
+    """
+    @   Función para leer un o algunos bloques de horario
+    *   Si el campo 'leer' es 'all', lee todos los bloques de horario sin filtros.
+    *   Si el campo 'leer' es 'some', lee los bloques de horario de acuerdo su id, hora_inicio, hora_fin o dia.
+    """
+    if msg['leer'] == 'all':
+        db_sql = {
+            "sql": "SELECT * FROM asignacion"
+        }
+        db_request = process_db_request(sock, db_sql)
+        if len(db_request) == 0:
+            return incode_response(service, {
+                "data": "No hay bloques de horario."
+            })
+        else:
+            return incode_response(service, {
+                "data": db_request
+            })
+    elif msg['leer'] == 'some':
+        #   Opción de leer usuarios, habrá que verificar si se desea leer un usuario o muchos
+        if 'id' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM asignacion WHERE id = :id",
+                "params": {
+                    "id": msg['id'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'usuario_id' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM asignacion WHERE usuario_id = :usuario_id",
+                "params": {
+                    "usuario_id": msg['usuario_id'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'bloque_id' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM asignacion WHERE bloque_id = :bloque_id",
+                "params": {
+                    "bloque_id": msg['bloque_id'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'hora_inicio' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM asignacion WHERE hora_inicio = :hora_inicio",
+                "params": {
+                    "hora_inicio": msg['hora_inicio'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'hora_fin' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM asignacion WHERE hora_fin = :hora_fin",
+                "params": {
+                    "hora_fin": msg['hora_fin'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        elif 'dia' in msg:
+            db_sql = {
+                "sql": "SELECT * FROM asignacion WHERE dia = :dia",
+                "params": {
+                    "dia": msg['dia'],
+                }
+            }
+            db_request = process_db_request(sock, db_sql)
+            if len(db_request) == 0:
+                return incode_response(service, {
+                    "data": "No hay bloques de horario."
+                })
+            else:
+                return incode_response(service, {
+                    "data": db_request
+                })
+        else:
+            return incode_response(service, {
+                "data": "No hay bloques de horario."
+            })
+
 
 
 def process_request(sock, data):
@@ -79,6 +199,8 @@ def process_request(sock, data):
         msg = json.loads(response)
         if 'asignar' in msg:
             return asignar(sock=sock, service=service, msg=msg)
+        elif 'leer' in msg:
+            return leer(sock=sock, service=service, msg=msg)
         else:
             return incode_response(service, {
                 "data": "No valid options."
