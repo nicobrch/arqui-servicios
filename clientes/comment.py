@@ -16,9 +16,6 @@ def crear_comentario_admin(sock, service):
             print("Volviendo...")
             break
         elif opcion == '1':
-            #   Verificar que la sesión este autorizada y tenga permisos
-            if not auth_session(session=session, tipo='admin'):
-                break
 
             #   Definir usuario a buscar
             usuario = input_field("Ingrese usuario a buscar: ", max_length=20)
@@ -62,9 +59,6 @@ def crear_comentario_admin(sock, service):
             status, comment_data = service_request(sock, service, datos)
             print_ins_del_upd(status, comment_data)
         elif opcion == '2':
-            #   Verificar que la sesión este autorizada y tenga permisos
-            if not auth_session(session=session, tipo='admin'):
-                break
 
             datos = {
                 "leer": "all"
@@ -109,12 +103,41 @@ def crear_comentario_admin(sock, service):
             print_ins_del_upd(status, comment_data)
 
 
+def crear_comentario_personal(sock, service):
+    print("[ - Crear comentario por asignación - ]")
+
+    datos = {
+        "leer": "some",
+        "usuario_id": session['id']
+    }
+    #   Obtenemos todas las asignaciones
+    status, assign_data = service_request(sock, 'asign', datos)
+
+    if len(assign_data) == 0:
+        print("No existen asignaciones en este momento para ti.")
+        return
+
+    #   Dejamos que el usuario seleccione una asignacion por su id
+    print("=== SELECCIONE UNA ID DE ASIGNACIÓN ===")
+    print_select(status, assign_data)
+    id_asignacion = input()
+    texto = input_field("Ingrese comentario: ", max_length=100)
+
+    #   Leer comentarios según ID de asignación
+    datos = {
+        "crear": {
+            "usuario_id": session['id'],
+            "asignacion_id": id_asignacion,
+            "texto": texto
+        }
+    }
+    #   Enviamos los datos al servicio
+    status, comment_data = service_request(sock, service, datos)
+    print_ins_del_upd(status, comment_data)
+
+
 def leer_comentarios_admin(sock, service):
     print("[ - Leer Comentarios por Asignación - ]")
-    #   Verificar que la sesión este autorizada y tenga permisos
-    session = get_session()
-    if not auth_session(session=session, tipo='admin'):
-        return
 
     datos = {
         "leer": "all"
@@ -138,16 +161,11 @@ def leer_comentarios_admin(sock, service):
     }
     #   Enviamos los datos al servicio
     status, comment_data = service_request(sock, service, datos)
-    print_ins_del_upd(status, comment_data)
+    print_select(status, comment_data)
 
 
 def leer_comentarios_personal(sock, service):
     print("[ - Leer Comentarios por Asignación - ]")
-    #   Verificar que la sesión este autorizada y tenga permisos
-    session = get_session()
-    if not auth_session(session=session, tipo='personal'):
-        return
-
     datos = {
         "leer": "some",
         "usuario_id": session['id']
@@ -220,7 +238,7 @@ def main_client():
                         break
 
                     elif opcion == '1':
-                        crear_comentario_admin(sock=sock, service=service)
+                        crear_comentario_personal(sock=sock, service=service)
 
                     elif opcion == '2':
                         leer_comentarios_personal(sock=sock, service=service)
